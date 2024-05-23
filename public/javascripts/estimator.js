@@ -24,84 +24,79 @@ else {
 function init() {
     // Camera
     camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 50, 80);
+    camera.position.set(4, 2, 4);
 
     // Renderer
     renderer = new THREE.WebGLRenderer();
 
-    renderer.setSize(container.clientWidth, container.clientHeight, true);
+    renderer.setSize(container.clientWidth, container.clientHeight, false);
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.update();
 
     // Scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xa0a0a0 );
-    // scene.fog = new THREE.Fog( 0xa0a0a0, 10, 50 );
+    scene.fog = new THREE.Fog( 0xa0a0a0, 4, 20 );
     scene.add(new THREE.AxesHelper(50));
 
 
     // Lights
-    const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x8d8d8d, 3 );
-    hemiLight.position.set( 0, 100, 0 );
+    const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444, 3 );
+    hemiLight.position.set( 0, 20, 0 );
     scene.add( hemiLight );
 
-    // const dirLight = new THREE.DirectionalLight( 0xffffff, 3 );
-    // dirLight.position.set( - 3, 10, - 10 );
-    // dirLight.castShadow = true;
-    // dirLight.shadow.camera.top = 2;
-    // dirLight.shadow.camera.bottom = - 2;
-    // dirLight.shadow.camera.left = - 2;
-    // dirLight.shadow.camera.right = 2;
-    // dirLight.shadow.camera.near = 0.1;
-    // dirLight.shadow.camera.far = 40;
-    // scene.add( dirLight );
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 3 );
+    directionalLight.position.set( 0, 20, 10 );
+    directionalLight.castShadow = true;
+    directionalLight.shadow.camera.top = 2;
+    directionalLight.shadow.camera.bottom = - 2;
+    directionalLight.shadow.camera.left = - 2;
+    directionalLight.shadow.camera.right = 2;
+    scene.add( directionalLight );
 
-    // const light = new THREE.SpotLight();
-    // light.position.set(100, 100, 100);
-    // scene.add(light);
 
-    const envTexture = new THREE.CubeTextureLoader().load(['../images/white.png','../images/white.png','../images/white.png','../images/white.png','../images/white.png','../images/white.png']);
+    // Ground
+    const ground = new THREE.Mesh( new THREE.PlaneGeometry( 40, 40 ), new THREE.MeshPhongMaterial( { color: 0xbbbbbb, depthWrite: false } ) );
+    ground.rotation.x = - Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add( ground );
 
-    const material = new THREE.MeshPhysicalMaterial({ 
-        color: 0xaaaaaa,
-        envMap: envTexture,
-        metalness: 0.25,
-        roughness: 0.1,
-        opacity: 1,
-        transparent: true,
-        transmission: 1,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.25
-    });
+    const grid = new THREE.GridHelper( 40, 20, 0x000000, 0x000000 );
+    grid.material.opacity = 0.2;
+    grid.material.transparent = true;
+    scene.add( grid );
 
+
+    // Load STL
     const loader = new STLLoader();
-    loader.load('../models/3DBenchy.stl', (geometry) => {
-        const mesh = new THREE.Mesh(geometry, material);
+    loader.load( '../models/3DBenchy.stl', function ( geometry ) {
+        const material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
+        const mesh = new THREE.Mesh( geometry, material );
 
-        const boundingBox = new THREE.Box3().setFromObject(mesh);
-        console.log(boundingBox.getSize(new THREE.Vector3));
-
-        // Retrieve maximum dimension, scale accordingly
-        // mesh.scale.set(0.5, 0.5, 0.5);
-
-        geometry.center();
-
-        scene.add(mesh);
+        mesh.scale.set(0.05, 0.05, 0.05);
+        mesh.rotateY(- Math.PI / 2);
+        mesh.rotateX(- Math.PI / 2);
+        
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        scene.add( mesh );
     });
 
     container.appendChild(renderer.domElement);
     window.addEventListener('resize', onWindowResize);
 }
 
-function onWindowResize(){
+
+function onWindowResize() {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight, true);
+    renderer.setSize(container.clientWidth, container.clientHeight, false);
 }
 
+
 function animate() {
-    renderer.render(scene, camera);
     requestAnimationFrame(animate);
-    controls.update();
+    renderer.render(scene, camera);
 }

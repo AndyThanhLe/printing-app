@@ -5,22 +5,17 @@ body {
 }
 
 .vert-features {
+	min-height: 95vh;
+	padding: 15px;
 	display: flex;
 	flex-direction: column;
-	min-width: 100vw;
-	min-height: 100vh;
-}
-
-.header {
-	flex: 0 1 auto;
-	margin: 0px 15px;
 }
 
 .main {
-    display: flex;
+	height: 100%;
 	flex: 1 1 auto;
+    display: flex;
 	flex-direction: row;
-	padding: 15px;
 }
 
 .main-panel {
@@ -47,7 +42,6 @@ body {
 	margin: 0 0 0 5px;
 }
 
-
 .main-panel > *:not(:first-child),
 .main-panel > *:not(:last-child) {
 	margin: 0 5px 0 5px;
@@ -61,23 +55,24 @@ body {
 	margin: 5px 0 0 0;
 }
 
-
-
-.panel-header {
-	display: flex;
-	align-items: center;
+.main-panel h1 {
+	white-space: nowrap;
 }
 
+.panel-header {
+	flex: 0 1 auto;
+}
 
 .panel-content {
 	background-color: #ffffff;
 	border-radius: 15px;
-	flex: 1;
+	flex: 1 1 auto;
 	padding: 15px;
 }
 
 #preview {
-	flex: 1;
+	flex: 0 1 auto;
+	overflow: hidden;
 }
 
 .config-input {
