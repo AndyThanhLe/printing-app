@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/estimator.css' />
+  </head>
+  <body class="vert-features">
+
+    <div class="header">
+      <h1><%= title %></h1>
+      <p>Welcome to <%= title %></p>
+    </div>
+
+    <div class="main">
+
+      <div class ="main-panel" id="stls">
+        <div class="panel-header">
+          <h1>Imported Files</h1>
+          <!-- Load all the files -->
+        </div>
+
+        <div class="panel-content">
+          <p>foo bar</p>
+        </div>
+
+      </div>
+
+      <div class="main-panel">
+        <div class="panel-header">
+          <h1>Model Preview</h1>
+        </div>
+        <div id="preview"></div>
+      </div>
+      
+      <div class="main-panel" id="configure">
+        <div class="panel-header">
+          <h1>Configuration</h1>
+        </div>
+
+        <div class="panel-content">
+          <form>
+            <div class="config-input">
+              <label>Some field:</label>
+              <br/>
+              <input type="text" id="printer">
+            </div>
+
+            <div class="config-input">
+              <label>STL File</label>
+              <br/>
+              <input type="file" id="file-submission" name="file">
+            </div>
+
+            <input type="submit">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/modules/three/build/three.module.js",
+          "three/examples/jsm/controls/OrbitControls": "/modules/three/examples/jsm/controls/OrbitControls.js",
+          "three/examples/jsm/loaders/STLLoader": "/modules/three/examples/jsm/loaders/STLLoader.js",
+          "three/addons/": "/modules/three/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module" src="/javascripts/estimator.js"></script>
+  </body>
+</html>
