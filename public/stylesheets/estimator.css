@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    background-color: #ffffff;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.vert-features {
+	display: flex;
+	flex-direction: column;
+	min-width: 100vw;
+	min-height: 100vh;
+}
+
+.header {
+	flex: 0 1 auto;
+	margin: 0px 15px;
+}
+
+.main {
+    display: flex;
+	flex: 1 1 auto;
+	flex-direction: row;
+	padding: 15px;
+}
+
+.main-panel {
+	background-color: #e1e1e1;
+	border-radius: 15px;
+	border: 2px solid #32a852;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 10px 25px 25px 25px;
+}
+
+.main > *:not(:first-child), 
+.main > *:not(:last-child) {
+	margin: 0 5px 0 5px;
+}
+
+.main > *:first-child {
+	margin: 0 5px 0 0;
+}
+
+.main > *:last-child {
+	margin: 0 0 0 5px;
+}
+
+
+.main-panel > *:not(:first-child),
+.main-panel > *:not(:last-child) {
+	margin: 0 5px 0 5px;
+}
+
+.main-panel > *:first-child {
+	margin: 0 0 5px 0;
+}
+
+.main-panel > *:last-child {
+	margin: 5px 0 0 0;
+}
+
+
+
+.panel-header {
+	display: flex;
+	align-items: center;
+}
+
+
+.panel-content {
+	background-color: #ffffff;
+	border-radius: 15px;
+	flex: 1;
+	padding: 15px;
+}
+
+#preview {
+	flex: 1;
+}
+
+.config-input {
+	margin: 20px 0px;
+}
