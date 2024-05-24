@@ -84,8 +84,8 @@ function init() {
         scene.add( mesh );
     });
 
-    container.appendChild(renderer.domElement);
     window.addEventListener('resize', onWindowResize);
+    container.appendChild(renderer.domElement);
 }
 
 
