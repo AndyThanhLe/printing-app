@@ -1,3 +1,11 @@
+:root {
+	--lg-padding: 15px;
+	--md-padding: 10px;
+	--sm-padding: 5px;
+	--lg-border-radius: 15px;
+	--sm-border-radius: 5px;
+}
+
 body {
     margin: 0;
     background-color: #ffffff;
@@ -5,9 +13,9 @@ body {
 }
 
 .vert-features {
-	width: calc(100vw - 2*15px);
-	height: calc(100vh - 2*15px);
-	padding: 15px;
+	width: calc(100vw - 2*var(--lg-padding));
+	height: calc(100vh - 2*var(--lg-padding));
+	padding: var(--lg-padding);
 	display: flex;
 	flex-direction: column;
 }
@@ -22,7 +30,7 @@ body {
 
 .main-panel {
 	background-color: #e1e1e1;
-	border-radius: 15px;
+	border-radius: var(--lg-border-radius);
 	border: 2px solid #32a852;
 	display: flex;
 	flex: 1;
@@ -67,16 +75,36 @@ body {
 
 .panel-content {
 	background-color: #ffffff;
-	border-radius: 15px;
+	border-radius: var(--lg-border-radius);
 	flex: 1 1 auto;
-	padding: 15px;
+	padding: var(--lg-padding);
+	display: flex;
+	flex-direction: column;
+}
+
+.panel-content * {
+	overflow: hidden;
 }
 
 #preview {
 	flex: 1;
-	overflow: hidden;
 }
 
 .config-input {
-	margin: 20px 0px;
+	margin: 10px 0px;
+}
+
+#config-form {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+input#config-submit {
+	margin-top: auto;
+	flex: 0 1 auto;
+	background-color: #32a852;
+	border: none;
+	border-radius: var(--sm-border-radius);
+	padding: var(--lg-padding);
 }

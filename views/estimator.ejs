@@ -20,11 +20,26 @@
         </div>
 
         <div class="panel-content">
-          <p>foo bar</p>
+          <p>Should a card type selectible list of files be introduced with pagination?</p>
+
+          <form>
+            <div>
+              <label>STL File</label>
+              <br/>
+              <input type="file" id="file-submission" name="file">
+            </div>
+          </form>
         </div>
+
+        
       </div>
 
       <div class="main-panel">
+        <div class="panel-header">
+          <h1>Model Preview</h1>
+          <!-- Load all the files -->
+        </div>
+
         <div id="preview"></div>
       </div>
       
@@ -34,20 +49,42 @@
         </div>
 
         <div class="panel-content">
-          <form>
+          <form id="config-form">
             <div class="config-input">
-              <label>Some field:</label>
-              <br/>
-              <input type="text" id="printer">
+              <label for="material">Material:</label><br/>
+              <select id="material" name="material">
+                <option hidden disabled selected value> -- select an option -- </option>
+                <option value="pla">PLA</option>
+                <option value="petg">PETG</option>
+                <option value="abs">ABS</option>
+                <option value="tpu">TPU</option>
+              </select>
             </div>
 
             <div class="config-input">
-              <label>STL File</label>
-              <br/>
-              <input type="file" id="file-submission" name="file">
+              <label for="colour">Colour:</label><br/>
+              <select id="colour" name="colour">
+                <option hidden disabled selected value> -- select an option -- </option>
+                <option value="black">Black</option>
+                <option value="grey">Grey</option>
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+              </select>
             </div>
 
-            <input type="submit">
+            <div class="config-input">
+              <p>Printer:</p>
+              <input type="radio" id="x1c" name="printer" value="x1c">
+              <label for="x1c">Bambu Lab X1C</label>
+              <br/>
+              <input type="radio" id="e3p" name="printer" value="e3p">
+              <label for="e3p">Creality Ender-3 Pro</label>
+              <br/>
+              <input type="radio" id="e2p" name="printer" value="e2p">
+              <label for="e2p">Creality Ender-2 Pro</label>
+            </div>
+
+            <input id="config-submit" type="submit">
           </form>
         </div>
       </div>
