@@ -22,16 +22,16 @@
         <div class="panel-content">
           <p>Should a card type selectible list of files be introduced with pagination?</p>
 
-          <form>
+          <form action="./upload" method="post" enctype="multipart/form-data">
             <div>
               <label>STL File</label>
               <br/>
-              <input type="file" id="file-submission" name="file">
+              <input id="file-submission" type="file" name="stl_file">
             </div>
+
+            <input id="file-submit" type="submit" value="Proceed">
           </form>
         </div>
-
-        
       </div>
 
       <div class="main-panel">
@@ -49,7 +49,7 @@
         </div>
 
         <div class="panel-content">
-          <form id="config-form">
+          <form>
             <div class="config-input">
               <label for="material">Material:</label><br/>
               <select id="material" name="material">
@@ -84,7 +84,7 @@
               <label for="e2p">Creality Ender-2 Pro</label>
             </div>
 
-            <input id="config-submit" type="submit">
+            <input id="config-submit" type="submit" value="Submit">
           </form>
         </div>
       </div>
