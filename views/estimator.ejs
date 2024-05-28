@@ -11,38 +11,47 @@
       <p>Welcome to <%= title %></p>
     </div>
 
-    <div class="main">
 
+    
+    <div class="main">
+      <!-- 
+        FILE IMPORT
+       -->
       <div class="main-panel" id="stls">
         <div class="panel-header">
           <h1>Imported Files</h1>
-          <!-- Load all the files -->
         </div>
 
         <div class="panel-content">
-          <p>Should a card type selectible list of files be introduced with pagination?</p>
+          <form id="import-form" action="./upload" method="post" enctype="multipart/form-data">
+            <input id="file-submission" type="file" name="stl_file" style="display: none;" />
+            <input id="stl-import" type="button" value="Import STL" />
+          </form>
 
-          <form action="./upload" method="post" enctype="multipart/form-data">
-            <div>
-              <label>STL File</label>
-              <br/>
-              <input id="file-submission" type="file" name="stl_file">
-            </div>
+          <p>Display all files that were uploaded during current session</p>
+          <p>Possibly limit them so there is a max of 10?</p>
+          <p>Should the configuration of each upload be stored/cached?</p>
 
-            <input id="file-submit" type="submit" value="Proceed">
+          <form>
+            <input id="proceed" type="submit" value="Proceed" />
           </form>
         </div>
       </div>
 
+      <!-- 
+        MODEL PREVIEW
+       -->
       <div class="main-panel">
         <div class="panel-header">
           <h1>Model Preview</h1>
-          <!-- Load all the files -->
         </div>
 
         <div id="preview"></div>
       </div>
       
+      <!-- 
+        CONFIGURATION
+       -->
       <div class="main-panel" id="configure">
         <div class="panel-header">
           <h1>Configuration</h1>
@@ -74,17 +83,17 @@
 
             <div class="config-input">
               <p>Printer:</p>
-              <input type="radio" id="x1c" name="printer" value="x1c">
+              <input type="radio" id="x1c" name="printer" value="x1c" />
               <label for="x1c">Bambu Lab X1C</label>
               <br/>
-              <input type="radio" id="e3p" name="printer" value="e3p">
+              <input type="radio" id="e3p" name="printer" value="e3p" />
               <label for="e3p">Creality Ender-3 Pro</label>
               <br/>
-              <input type="radio" id="e2p" name="printer" value="e2p">
+              <input type="radio" id="e2p" name="printer" value="e2p" />
               <label for="e2p">Creality Ender-2 Pro</label>
             </div>
 
-            <input id="config-submit" type="submit" value="Submit">
+            <input id="config-submit" type="submit" value="Submit" />
           </form>
         </div>
       </div>
@@ -102,5 +111,6 @@
     </script>
 
     <script type="module" src="/javascripts/estimator.js"></script>
+    <script type="module" src="/javascripts/three_preview.js"></script>
   </body>
 </html>
