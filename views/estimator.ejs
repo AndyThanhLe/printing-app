@@ -14,20 +14,34 @@
       <!-- 
         FILE IMPORT
        -->
-      <div class="main-panel" id="stls">
+      <div class="main-panel">
         <div class="panel-header">
           <h1>Imported Files</h1>
         </div>
 
         <div class="panel-content">
           <form id="import-form" action="./upload" method="post" enctype="multipart/form-data">
-            <input id="file-submission" type="file" name="stl_file" style="display: none;" />
+            <input id="file-submission" type="file" name="stl-file" style="display: none;" />
             <input id="stl-import" type="button" value="Import STL" />
           </form>
 
-          <p>Display all files that were uploaded during current session</p>
+          <div id="stls">
+            <div class="stl">
+              <input id="stl-1" type="button" value="STL 1" />
+            </div>
+  
+            <div class="stl">
+              <input id="stl-2" type="button" value="STL 2" />
+            </div>
+  
+            <div class="stl">
+              <input id="stl-3" type="button" value="STL 3" />
+            </div>
+          </div>
+
+          <!-- <p>Display all files that were uploaded during current session</p>
           <p>Possibly limit them so there is a max of 10?</p>
-          <p>Should the configuration of each upload be stored/cached?</p>
+          <p>Should the configuration of each upload be stored/cached?</p> -->
 
           <form>
             <input id="proceed" type="button" value="Proceed" />
