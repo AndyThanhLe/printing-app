@@ -5,13 +5,10 @@
     <link rel='stylesheet' href='/stylesheets/estimator.css' />
   </head>
   <body class="vert-features">
-
     <div class="header">
       <h1><%= title %></h1>
       <p>Welcome to <%= title %></p>
     </div>
-
-
     
     <div class="main">
       <!-- 
@@ -33,7 +30,7 @@
           <p>Should the configuration of each upload be stored/cached?</p>
 
           <form>
-            <input id="proceed" type="submit" value="Proceed" />
+            <input id="proceed" type="button" value="Proceed" />
           </form>
         </div>
       </div>
@@ -91,6 +88,11 @@
               <br/>
               <input type="radio" id="e2p" name="printer" value="e2p" />
               <label for="e2p">Creality Ender-2 Pro</label>
+            </div>
+
+            <div class="config-input">
+              <label for="infill">Infill (%):</label><br/>
+              <input type="number" value="15" min="10" max="100" step="1" id="infill" name="infill" />
             </div>
 
             <input id="config-submit" type="submit" value="Submit" />
