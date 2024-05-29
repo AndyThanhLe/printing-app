@@ -1,103 +1,103 @@
 :root {
-	--lg-padding: 15px;
-	--md-padding: 10px;
-	--sm-padding: 5px;
-	--lg-border-radius: 15px;
-	--sm-border-radius: 5px;
+  --lg-padding: 15px;
+  --md-padding: 10px;
+  --sm-padding: 5px;
+  --lg-border-radius: 15px;
+  --sm-border-radius: 5px;
 }
 
 body {
-    margin: 0;
-    background-color: #ffffff;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  background-color: #ffffff;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .vert-features {
-	width: calc(100vw - 2*var(--lg-padding));
-	height: calc(100vh - 2*var(--lg-padding));
-	padding: var(--lg-padding);
-	display: flex;
-	flex-direction: column;
+  width: calc(100vw - 2*var(--lg-padding));
+  height: calc(100vh - 2*var(--lg-padding));
+  padding: var(--lg-padding);
+  display: flex;
+  flex-direction: column;
 }
 
 .main {
-	height: 100%;
-	flex: 1;
-    display: flex;
-	flex-direction: row;
-	overflow: hidden;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 }
 
 .main-panel {
-	background-color: #e1e1e1;
-	border-radius: var(--lg-border-radius);
-	border: 2px solid #999999;
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	overflow: hidden;
-	padding: 10px 25px 25px 25px;
+  background-color: #e1e1e1;
+  border-radius: var(--lg-border-radius);
+  border: 2px solid #999999;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 10px 25px 25px 25px;
 }
 
 .main > *:not(:first-child), 
 .main > *:not(:last-child) {
-	margin: 0 5px 0 5px;
+  margin: 0 5px 0 5px;
 }
 
 .main > *:first-child {
-	margin: 0 5px 0 0;
+  margin: 0 5px 0 0;
 }
 
 .main > *:last-child {
-	margin: 0 0 0 5px;
+  margin: 0 0 0 5px;
 }
 
 .main-panel > *:not(:first-child),
 .main-panel > *:not(:last-child) {
-	margin: 0 5px 0 5px;
+  margin: 0 5px 0 5px;
 }
 
 .main-panel > *:first-child {
-	margin: 0 0 5px 0;
+  margin: 0 0 5px 0;
 }
 
 .main-panel > *:last-child {
-	margin: 5px 0 0 0;
+  margin: 5px 0 0 0;
 }
 
 .main-panel h1 {
-	white-space: nowrap;
+  white-space: nowrap;
 }
 
 .panel-header {
-	flex: 0 1 auto;
+  flex: 0 1 auto;
 }
 
 .panel-content {
-	background-color: #ffffff;
-	border-radius: var(--lg-border-radius);
-	flex: 1 1 auto;
-	padding: var(--lg-padding);
-	display: flex;
-	flex-direction: column;
+  background-color: #ffffff;
+  border-radius: var(--lg-border-radius);
+  flex: 1 1 auto;
+  padding: var(--lg-padding);
+  display: flex;
+  flex-direction: column;
 }
 
 .panel-content * {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 #preview {
-	flex: 1;
+  flex: 1;
 }
 
 .config-input {
-	margin: 10px 0px;
+  margin: 10px 0px;
 }
 
 .panel-content > form {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -106,24 +106,24 @@ input[type=submit],
 input[type=radio],
 input[type=radio] + label,
 select {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 
 input[type=button],
 input[type=submit] {
-	flex: 0 1 auto;
-	background-color: #32a852;
-	border: none;
-	border-radius: var(--sm-border-radius);
-	padding: var(--lg-padding);
+  flex: 0 1 auto;
+  background-color: #32a852;
+  border: none;
+  border-radius: var(--sm-border-radius);
+  padding: var(--lg-padding);
 }
 
 input#stl-import {
-	margin-bottom: auto;
+  margin-bottom: auto;
 }
 
 input#proceed,
 input#config-submit {
-	margin-top: auto;
+  margin-top: auto;
 }
