@@ -24,8 +24,10 @@ router.get('/', function(req, res, next) {
 
 /* File submission */
 router.post('/upload', upload.single('stl_file'), function(req, res, next) {
-  // console.log(req.file, req.body);
-  res.redirect('.');
+  console.log(`Uploaded file '${req.file.originalname}'!`);
+  res.json({
+    fileName: req.file.originalname
+  });
 });
 
 module.exports = router;
