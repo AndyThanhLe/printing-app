@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -16,8 +17,8 @@ const storage = multer.diskStorage({
     else {
       // would it be worth it to perform some kind of encryption and use a dictionary or something to hide the data
 
-      // cb(null, `${Date.now()}.stl`);
-      cb(null, `${file.originalname}`);
+      cb(null, `${Date.now()}.stl`);
+      // cb(null, `${file.originalname}`);
     }
   }
 });
@@ -35,7 +36,7 @@ router.get('/', function(req, res, next) {
 /* File submission */
 router.post('/upload', upload.single('stl-file'), function(req, res, next) {
   res.json({
-    fileName: req.file.originalname
+    fileName: path.parse(req.file.filename).name,
   });
 });
 

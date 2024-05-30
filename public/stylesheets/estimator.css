@@ -67,11 +67,8 @@ body {
   gap: var(--md-padding)
 }
 
-.panel-content * {
-  overflow: hidden;
-}
-
 #preview {
+  overflow: hidden;
   flex: 1;
 }
 
@@ -104,7 +101,7 @@ input[type=submit] {
 #stls {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 99;
   gap: var(--sm-margin);
 }
 
