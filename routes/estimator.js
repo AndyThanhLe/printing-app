@@ -8,7 +8,17 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   }, 
   filename: function (req, file, cb) {
-    cb(null, `${file.originalname}`);
+    const re = /(?:\.([^.]+))?$/;
+    const ext = re.exec(file.originalname)[1];
+    if (ext == undefined || ext != 'stl') {
+      cb(new Error('The file is not an stl file!'));
+    }
+    else {
+      // would it be worth it to perform some kind of encryption and use a dictionary or something to hide the data
+
+      // cb(null, `${Date.now()}.stl`);
+      cb(null, `${file.originalname}`);
+    }
   }
 });
 const upload = multer({ 
@@ -24,7 +34,6 @@ router.get('/', function(req, res, next) {
 
 /* File submission */
 router.post('/upload', upload.single('stl-file'), function(req, res, next) {
-  console.log(`Uploaded file '${req.file.originalname}'!`);
   res.json({
     fileName: req.file.originalname
   });
