@@ -67,10 +67,11 @@ function init() {
 
   // Load STL
   const loader = new STLLoader();
-  loader.load( '../models/3DBenchy.stl', function ( geometry ) {
+  loader.load( '../models/3DBenchy.stl', (geometry) => {
     const material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
     const mesh = new THREE.Mesh( geometry, material );
 
+    // TODO: Scale and rotate accordingly
     mesh.scale.set(0.05, 0.05, 0.05);
     mesh.rotateY(- Math.PI / 2);
     mesh.rotateX(- Math.PI / 2);
