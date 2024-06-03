@@ -41,9 +41,10 @@ router.post('/upload', upload.single('stl-file'), (req, res, next) => {
 });
 
 router.post('/submit', (req, res, next) => {
-  for (let key in req.body) {
-    console.log(`${key};  ${req.body[key]}`);
-  }
+  console.log(req.body.material);
+  console.log(req.body.colour);
+  console.log(req.body.printer);
+  console.log(req.body.infill);
 
   // send back data on where to redirect
   res.redirect('../');
