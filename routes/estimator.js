@@ -5,10 +5,10 @@ const path = require('path');
 
 // Multer setup
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, 'uploads/');
   }, 
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     const re = /(?:\.([^.]+))?$/;
     const ext = re.exec(file.originalname)[1];
     if (ext == undefined || ext != 'stl') {
@@ -28,16 +28,25 @@ const upload = multer({
 });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
   res.render('estimator', { title: 'Estimator' });
 });
 
 
-/* File submission */
-router.post('/upload', upload.single('stl-file'), function(req, res, next) {
+/* POST File submission */
+router.post('/upload', upload.single('stl-file'), (req, res, next) => {
   res.json({
     fileName: path.parse(req.file.filename).name,
   });
 });
+
+router.post('/submit', (req, res, next) => {
+  for (let key in req.body) {
+    console.log(`${key};  ${req.body[key]}`);
+  }
+
+  // send back data on where to redirect
+  res.redirect('../');
+})
 
 module.exports = router;

@@ -1,5 +1,31 @@
-document.getElementById('stl-import').addEventListener('click', () => { document.getElementById('file-submission').click(); });
+
+/**
+ * Event Listeners
+ */
+
+// Deal with file import
+document.getElementById('stl-import').addEventListener('click', () => {
+  document.getElementById('file-submission').click();
+});
 document.getElementById('file-submission').addEventListener('change', upload);
+
+// Deal with submission
+document.getElementById('config-submit').addEventListener('click', async function () {
+  const response = await fetch(`${window.location.pathname}/submit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "material": document.getElementsByName('material')[0].value,
+      "colour": document.getElementsByName('colour')[0].value,
+      "printer": document.getElementsByName('printer')[0].value,
+      "infill": document.getElementsByName('infill')[0].value,
+    }),
+  });
+
+  // redirect...
+});
 
 async function upload() {
   if (document.getElementById('file-submission').files.length == 0) {
