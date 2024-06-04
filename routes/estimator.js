@@ -4,14 +4,16 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Declare variables
-stls = {}
+const modelDir = 'public/models/';
 
+// Declare variables
+selectedSTL = null
+stls = {}
 
 // Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, modelDir);
   }, 
   filename: (req, file, cb) => {
     const re = /(?:\.([^.]+))?$/;
@@ -51,7 +53,7 @@ router.delete('/remove', (req, res, next) => {
   console.log(req.body.id);
 
   // TODO: delete file from the server!
-  fs.unlink(`uploads/${req.body.id}.stl`, (error) => {
+  fs.unlink(`${modelDir}${req.body.id}.stl`, (error) => {
     if (error) {
       throw error;
     }

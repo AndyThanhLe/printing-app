@@ -7,6 +7,11 @@ const container = document.getElementById('preview');
 let camera, renderer, scene;
 let controls;
 
+let material, mesh;
+
+const loader = new STLLoader();
+
+
 init();
 
 if (WebGL.isWebGLAvailable()) {
@@ -66,20 +71,9 @@ function init() {
 
 
   // Load STL
-  const loader = new STLLoader();
-  loader.load( '../models/3DBenchy.stl', (geometry) => {
-    const material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
-    const mesh = new THREE.Mesh( geometry, material );
-
-    // TODO: Scale and rotate accordingly
-    mesh.scale.set(0.05, 0.05, 0.05);
-    mesh.rotateY(- Math.PI / 2);
-    mesh.rotateX(- Math.PI / 2);
-    
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    scene.add( mesh );
-  });
+  // loadSTL('../models/3DBenchy.stl');
+  // loadSTL('../models/elephant.stl');
+  
 
   window.addEventListener('resize', onWindowResize);
   container.appendChild(renderer.domElement);
@@ -92,6 +86,25 @@ function onWindowResize() {
   renderer.setSize(container.clientWidth, container.clientHeight, false);
 }
 
+
+
+export function loadSTL(name) {
+  loader.load(name, (geometry) => {
+    material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
+    mesh = new THREE.Mesh( geometry, material );
+
+    // TODO: Scale and rotate accordingly
+    mesh.scale.set(0.05, 0.05, 0.05);
+    mesh.rotateY(- Math.PI / 2);
+    mesh.rotateX(- Math.PI / 2);
+    
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add( mesh );
+  });
+
+  return mesh;
+}
 
 function animate() {
   requestAnimationFrame(animate);

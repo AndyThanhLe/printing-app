@@ -1,3 +1,4 @@
+import { loadSTL } from './three-preview.js';
 
 /**
  * Event Listeners
@@ -33,10 +34,12 @@ async function upload() {
       .then((r) => {
         console.log(r);
         createSTLButton(r);
+        loadSTL(`../models/${r.fileName}.stl`)
       })
       .catch((r) => {
         console.log(r);
       });
+
   }
   catch (error) {
     console.error(`An error has occurred!: ${error}`);
@@ -121,4 +124,5 @@ function createSTLButton(r) {
   stl.appendChild(del);
 
   stls.append(stl);
+
 }
