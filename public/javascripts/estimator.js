@@ -77,7 +77,7 @@ function createSTLButton(r) {
   const inp = document.createElement('input');
   inp.id = `stl-data-${id}`;
   inp.type = 'button';
-  inp.value = `STL ${id}`;
+  inp.value = `${r.stlName}`;
   inp.addEventListener('click', async function() {
     console.log(this.id.split('-').pop());
   });
@@ -86,7 +86,7 @@ function createSTLButton(r) {
   const del = document.createElement('input');
   del.id = `stl-del-${r.fileName}`;
   del.type = 'button';
-  del.value = `DELETE`;
+  del.value = `Delete`;
   del.addEventListener('click', async function() {
     const stlId = this.id.split('-').pop();
 

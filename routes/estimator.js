@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Declare variables
 stls = {}
@@ -39,9 +40,9 @@ router.get('/', (req, res, next) => {
 
 /* PUT file submission */
 router.put('/upload', upload.single('stl-file'), (req, res, next) => {
-  stls
   res.json({
     fileName: path.parse(req.file.filename).name,
+    stlName: req.file.originalname.replace(/\.stl$/, ''),
   });
 });
 
@@ -50,6 +51,12 @@ router.delete('/remove', (req, res, next) => {
   console.log(req.body.id);
 
   // TODO: delete file from the server!
+  fs.unlink(`uploads/${req.body.id}.stl`, (error) => {
+    if (error) {
+      throw error;
+    }
+    console.log(`'${req.body.id}.stl' has been deleted!`);
+  });
 
   res.json({
     success: true,

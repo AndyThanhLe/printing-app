@@ -82,6 +82,10 @@ body {
   flex-direction: column;
 }
 
+#import-form {
+  gap: var(--md-margin);
+}
+
 input[type=button],
 input[type=submit],
 input[type=radio],
@@ -108,10 +112,13 @@ input[type=submit] {
 .stl {
   display: flex;
   flex: 1;
+  max-height: 33%;
 }
 
 .stl > input[type=button] {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 input[type=button]:hover,
