@@ -34,7 +34,7 @@ router.get('/', (req, res, next) => {
 
 
 /* POST File submission */
-router.post('/upload', upload.single('stl-file'), (req, res, next) => {
+router.put('/upload', upload.single('stl-file'), (req, res, next) => {
   res.json({
     fileName: path.parse(req.file.filename).name,
   });

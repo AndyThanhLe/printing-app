@@ -9,24 +9,6 @@ document.getElementById('stl-import').addEventListener('click', () => {
 });
 document.getElementById('file-submission').addEventListener('change', upload);
 
-// Deal with submission
-document.getElementById('config-submit').addEventListener('click', async function () {
-  const response = await fetch(`${window.location.pathname}/submit`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      "material": document.getElementsByName('material')[0].value,
-      "colour": document.getElementsByName('colour')[0].value,
-      "printer": document.getElementsByName('printer')[0].value,
-      "infill": document.getElementsByName('infill')[0].value,
-    }),
-  });
-
-  // redirect...
-});
-
 async function upload() {
   if (document.getElementById('file-submission').files.length == 0) {
     return;
@@ -39,7 +21,7 @@ async function upload() {
 
   try {
     const response = await fetch(`${window.location.pathname}/upload`, {
-      method: 'POST',
+      method: 'PUT',
       body: formData,
     });
 
@@ -64,6 +46,25 @@ async function upload() {
   
   document.getElementById('file-submission').value = '';
 }
+
+
+// Deal with submission
+document.getElementById('config-submit').addEventListener('click', async function () {
+  const response = await fetch(`${window.location.pathname}/submit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "material": document.getElementsByName('material')[0].value,
+      "colour": document.getElementsByName('colour')[0].value,
+      "printer": document.getElementsByName('printer')[0].value,
+      "infill": document.getElementsByName('infill')[0].value,
+    }),
+  });
+
+  // redirect...
+});
 
 
 function createSTLButton(r) {
