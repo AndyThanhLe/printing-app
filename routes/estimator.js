@@ -3,6 +3,10 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 
+// Declare variables
+stls = {}
+
+
 // Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,19 +31,32 @@ const upload = multer({
   limits: { fileSize: 100000000 },
 });
 
+
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('estimator', { title: 'Estimator' });
 });
 
-
-/* POST File submission */
+/* PUT file submission */
 router.put('/upload', upload.single('stl-file'), (req, res, next) => {
+  stls
   res.json({
     fileName: path.parse(req.file.filename).name,
   });
 });
 
+/* DELETE file removal */
+router.delete('/remove', (req, res, next) => {
+  console.log(req.body.id);
+
+  // TODO: delete file from the server!
+
+  res.json({
+    success: true,
+  })
+});
+
+/* POST form submission */
 router.post('/submit', (req, res, next) => {
   console.log(req.body.material);
   console.log(req.body.colour);

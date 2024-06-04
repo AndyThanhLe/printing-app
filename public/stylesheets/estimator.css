@@ -107,7 +107,6 @@ input[type=submit] {
 
 .stl {
   display: flex;
-  flex-direction: column;
   flex: 1;
 }
 

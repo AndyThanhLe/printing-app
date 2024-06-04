@@ -35,14 +35,12 @@ async function upload() {
         createSTLButton(r);
       })
       .catch((r) => {
-        console.log(r)
+        console.log(r);
       });
   }
   catch (error) {
     console.error(`An error has occurred!: ${error}`);
   }
-
-  // Populate
   
   document.getElementById('file-submission').value = '';
 }
@@ -68,21 +66,59 @@ document.getElementById('config-submit').addEventListener('click', async functio
 
 
 function createSTLButton(r) {
+  const id = r.fileName;
+
   const stls = document.getElementById('stls');
 
   const stl = document.createElement('div');
   stl.className = 'stl';
+  stl.id = `stl-${id}`;
 
   const inp = document.createElement('input');
-  inp.id = `stl-${r.fileName}`;
+  inp.id = `stl-data-${id}`;
   inp.type = 'button';
-  inp.value = `STL ${r.fileName}`;
-
-  stl.appendChild(inp);
-  stls.append(stl);
-
-  inp.addEventListener('click', () => {
-    console.log(inp.id.split('-').pop());
+  inp.value = `STL ${id}`;
+  inp.addEventListener('click', async function() {
+    console.log(this.id.split('-').pop());
   });
-  
+  stl.appendChild(inp);
+
+  const del = document.createElement('input');
+  del.id = `stl-del-${r.fileName}`;
+  del.type = 'button';
+  del.value = `DELETE`;
+  del.addEventListener('click', async function() {
+    const stlId = this.id.split('-').pop();
+
+    try {
+      const response = await fetch(`${window.location.pathname}/remove`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'id': stlId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Issue deleting the file!')
+      }
+
+      response.json()
+        .then((r) => {
+          const element = document.getElementById(`stl-${stlId}`);
+          element.remove();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  });
+  stl.appendChild(del);
+
+  stls.append(stl);
 }
