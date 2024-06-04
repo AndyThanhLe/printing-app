@@ -10,7 +10,7 @@ let controls;
 let material, mesh;
 
 let stls = {};
-let activeMesh = null;
+let active;
 
 
 const loader = new STLLoader();
@@ -104,20 +104,24 @@ export function loadSTL(name) {
     
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-
-    scene.add(mesh);
     
     stls[name] = mesh;
-    if (activeMesh !== null) {
-      scene.remove(activeMesh);
+
+    if (active) {
+      scene.remove(stls[active]);
     }
-    activeMesh = mesh;
+
+    scene.add(mesh);
+    active = name;
   });
 }
 
 export function removeSTL(name) {
-  if (activeMesh == stls[name]) {
-    activeMesh = null;
+  console.log(active);
+  console.log(name);
+  
+  if (active == name) {
+    active = null;
     scene.remove(stls[name]);
   }
   delete stls.name;

@@ -86,7 +86,7 @@ function createSTLButton(r) {
   inp.type = 'button';
   inp.value = `${r.stlName}`;
   inp.addEventListener('click', async function() {
-    console.log(this.id.split('-').pop());
+    loadSTL(id);
   });
   stl.appendChild(inp);
 
