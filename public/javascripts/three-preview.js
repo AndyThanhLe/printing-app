@@ -9,6 +9,10 @@ let controls;
 
 let material, mesh;
 
+let stls = {};
+let activeMesh = null;
+
+
 const loader = new STLLoader();
 
 
@@ -89,7 +93,7 @@ function onWindowResize() {
 
 
 export function loadSTL(name) {
-  loader.load(name, (geometry) => {
+  loader.load(`../models/${name}.stl`, (geometry) => {
     material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
     mesh = new THREE.Mesh( geometry, material );
 
@@ -100,10 +104,23 @@ export function loadSTL(name) {
     
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-    scene.add( mesh );
-  });
 
-  return mesh;
+    scene.add(mesh);
+    
+    stls[name] = mesh;
+    if (activeMesh !== null) {
+      scene.remove(activeMesh);
+    }
+    activeMesh = mesh;
+  });
+}
+
+export function removeSTL(name) {
+  if (activeMesh == stls[name]) {
+    activeMesh = null;
+    scene.remove(stls[name]);
+  }
+  delete stls.name;
 }
 
 function animate() {

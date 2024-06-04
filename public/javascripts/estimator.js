@@ -1,9 +1,8 @@
-import { loadSTL } from './three-preview.js';
+import { loadSTL, removeSTL } from './three-preview.js';
 
 /**
  * Event Listeners
  */
-
 // Deal with file import
 document.getElementById('stl-import').addEventListener('click', () => {
   document.getElementById('file-submission').click();
@@ -33,8 +32,9 @@ async function upload() {
     response.json()
       .then((r) => {
         console.log(r);
+        // TODO: make these actions into a function
         createSTLButton(r);
-        loadSTL(`../models/${r.fileName}.stl`)
+        updateActiveSTL(r);
       })
       .catch((r) => {
         console.log(r);
@@ -46,6 +46,10 @@ async function upload() {
   }
   
   document.getElementById('file-submission').value = '';
+}
+
+function updateActiveSTL(r) {
+  loadSTL(r.fileName);
 }
 
 
@@ -110,6 +114,7 @@ function createSTLButton(r) {
 
       response.json()
         .then((r) => {
+          removeSTL(id);
           const element = document.getElementById(`stl-${stlId}`);
           element.remove();
         })
@@ -124,5 +129,4 @@ function createSTLButton(r) {
   stl.appendChild(del);
 
   stls.append(stl);
-
 }

@@ -6,10 +6,6 @@ const fs = require('fs');
 
 const modelDir = 'public/models/';
 
-// Declare variables
-selectedSTL = null
-stls = {}
-
 // Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
