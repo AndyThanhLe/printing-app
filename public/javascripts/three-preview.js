@@ -3,17 +3,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
+// Declare variables and constants
 const container = document.getElementById('preview');
+
 let camera, renderer, scene;
 let controls;
-
 let material, mesh;
 
-let stls = {};
-let active;
-
-
 const loader = new STLLoader();
+const stls = {};
+let active;
 
 
 init();
@@ -24,6 +23,11 @@ if (WebGL.isWebGLAvailable()) {
 else {
   const warning = WebGL.getWebGLErrorMessage();
   document.body.appendChild(warning);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
 
 function init() {
@@ -73,13 +77,8 @@ function init() {
   grid.material.transparent = true;
   scene.add( grid );
 
-
-  // Load STL
-  // loadSTL('../models/3DBenchy.stl');
-  // loadSTL('../models/elephant.stl');
-  
-
   window.addEventListener('resize', onWindowResize);
+
   container.appendChild(renderer.domElement);
 }
 
@@ -91,8 +90,16 @@ function onWindowResize() {
 }
 
 
-
 export function loadSTL(name) {
+  if (active == name) {
+    return;
+  }
+
+  if (active) {
+    scene.remove(stls[active]);
+    active = null;
+  }
+
   loader.load(`../models/${name}.stl`, (geometry) => {
     material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
     mesh = new THREE.Mesh( geometry, material );
@@ -107,14 +114,11 @@ export function loadSTL(name) {
     
     stls[name] = mesh;
 
-    if (active) {
-      scene.remove(stls[active]);
-    }
-
     scene.add(mesh);
     active = name;
   });
 }
+
 
 export function removeSTL(name) {
   console.log(active);
@@ -125,9 +129,4 @@ export function removeSTL(name) {
     scene.remove(stls[name]);
   }
   delete stls.name;
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
 }
