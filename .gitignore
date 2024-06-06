@@ -1,5 +1,8 @@
+# Directories
 node_modules
-.DS_Store
 */models/*
 
+# Individual files
+.DS_Store
+.env
 !.gitkeep
