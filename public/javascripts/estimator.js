@@ -1,5 +1,10 @@
 import { loadSTL, removeSTL } from './three-preview.js';
 
+
+// Declare variables and constants
+const modelFiles = {}
+
+
 /**
  * Event Listeners
  */
@@ -8,50 +13,6 @@ document.getElementById('stl-import').addEventListener('click', () => {
   document.getElementById('file-submission').click();
 });
 document.getElementById('file-submission').addEventListener('change', upload);
-
-async function upload() {
-  if (document.getElementById('file-submission').files.length == 0) {
-    return;
-  }
-
-  console.log(document.getElementById('file-submission').files);
-
-  const formData = new FormData();
-  formData.append('stl-file', document.getElementById('file-submission').files[0]);
-
-  try {
-    const response = await fetch(`${window.location.pathname}/upload`, {
-      method: 'PUT',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    response.json()
-      .then((r) => {
-        console.log(r);
-        // TODO: make these actions into a function
-        createSTLButton(r);
-        updateActiveSTL(r);
-      })
-      .catch((r) => {
-        console.log(r);
-      });
-
-  }
-  catch (error) {
-    console.error(`An error has occurred!: ${error}`);
-  }
-  
-  document.getElementById('file-submission').value = '';
-}
-
-function updateActiveSTL(r) {
-  loadSTL(r.fileName);
-}
-
 
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
@@ -72,8 +33,57 @@ document.getElementById('config-submit').addEventListener('click', async functio
 });
 
 
+
+async function upload() {
+  if (document.getElementById('file-submission').files.length == 0) {
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('stl-file', document.getElementById('file-submission').files[0]);
+
+  try {
+    const response = await fetch(`${window.location.pathname}/upload`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    console.log(document.getElementById('file-submission').files[0]);
+
+    response.json()
+      .then((r) => {
+        console.log(r);
+        // TODO: make these actions into a function
+        createSTLButton(r);
+        updateActiveSTL(r);
+      })
+      .catch((r) => {
+        console.log(r);
+      });
+
+  }
+  catch (error) {
+    console.error(`An error has occurred!: ${error}`);
+  }
+  
+  document.getElementById('file-submission').value = '';
+}
+
+
+function updateActiveSTL(r) {
+  loadSTL(r.fileName);
+}
+
+
 function createSTLButton(r) {
-  const id = r.fileName;
+  const fileName = r.fileName;
+  const id = removeExtension(fileName);
+
+  console.log(id);
 
   const stls = document.getElementById('stls');
 
@@ -84,18 +94,19 @@ function createSTLButton(r) {
   const inp = document.createElement('input');
   inp.id = `stl-data-${id}`;
   inp.type = 'button';
-  inp.value = `${r.stlName}`;
+  inp.value = `${id}`;
   inp.addEventListener('click', async function() {
-    loadSTL(id);
+    loadSTL(fileName);
   });
   stl.appendChild(inp);
 
   const del = document.createElement('input');
-  del.id = `stl-del-${r.fileName}`;
+  del.id = `stl-del-${fileName}`;
   del.type = 'button';
   del.value = `Delete`;
   del.addEventListener('click', async function() {
-    const stlId = this.id.split('-').pop();
+    const fileName = this.id.split('-').pop();
+    console.log(fileName); 
 
     try {
       const response = await fetch(`${window.location.pathname}/remove`, {
@@ -104,7 +115,7 @@ function createSTLButton(r) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'id': stlId,
+          'id': fileName,
         }),
       });
 
@@ -114,8 +125,8 @@ function createSTLButton(r) {
 
       response.json()
         .then((r) => {
-          removeSTL(id);
-          const element = document.getElementById(`stl-${stlId}`);
+          removeSTL(fileName);
+          const element = document.getElementById(`stl-${removeExtension(fileName)}`);
           element.remove();
         })
         .catch((e) => {
@@ -129,4 +140,8 @@ function createSTLButton(r) {
   stl.appendChild(del);
 
   stls.append(stl);
+}
+
+function removeExtension(s) {
+  return s.replace(/\.stl$/, '');
 }

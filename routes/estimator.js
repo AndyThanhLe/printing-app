@@ -4,12 +4,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const modelDir = 'public/models/';
+// Declare variables and constants
+
 
 // Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, modelDir);
+    cb(null, process.env.MODEL_UPLOAD_DIRECTORY);
   }, 
   filename: (req, file, cb) => {
     const re = /(?:\.([^.]+))?$/;
@@ -39,8 +40,7 @@ router.get('/', (req, res, next) => {
 /* PUT file submission */
 router.put('/upload', upload.single('stl-file'), (req, res, next) => {
   res.json({
-    fileName: path.parse(req.file.filename).name,
-    stlName: req.file.originalname.replace(/\.stl$/, ''),
+    fileName: req.file.filename,
   });
 });
 
@@ -49,17 +49,19 @@ router.delete('/remove', (req, res, next) => {
   console.log(req.body.id);
 
   // TODO: delete file from the server!
-  fs.unlink(`${modelDir}${req.body.id}.stl`, (error) => {
+  fs.unlink(`${process.env.MODEL_UPLOAD_DIRECTORY}${req.body.id}`, (error) => {
     if (error) {
       throw error;
     }
-    console.log(`'${req.body.id}.stl' has been deleted!`);
+    console.log(`'${req.body.id}' has been deleted!`);
   });
 
   res.json({
     success: true,
   })
 });
+
+
 
 /* POST form submission */
 router.post('/submit', (req, res, next) => {

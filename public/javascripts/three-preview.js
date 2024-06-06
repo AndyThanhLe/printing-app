@@ -90,8 +90,8 @@ function onWindowResize() {
 }
 
 
-export function loadSTL(name) {
-  if (active == name) {
+export function loadSTL(fileName) {
+  if (active == fileName) {
     return;
   }
 
@@ -100,7 +100,7 @@ export function loadSTL(name) {
     active = null;
   }
 
-  loader.load(`../models/${name}.stl`, (geometry) => {
+  loader.load(`../models/${fileName}`, (geometry) => {
     material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
     mesh = new THREE.Mesh( geometry, material );
 
@@ -112,21 +112,18 @@ export function loadSTL(name) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     
-    stls[name] = mesh;
+    stls[fileName] = mesh;
 
     scene.add(mesh);
-    active = name;
+    active = fileName;
   });
 }
 
 
-export function removeSTL(name) {
-  console.log(active);
-  console.log(name);
-  
-  if (active == name) {
+export function removeSTL(fileName) {
+  if (active == fileName) {
     active = null;
-    scene.remove(stls[name]);
+    scene.remove(stls[fileName]);
   }
-  delete stls.name;
+  delete stls.fileName;
 }

@@ -1,14 +1,18 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const { v4: uuidv4 } = require('uuid');
 
-var indexRouter = require('./routes/index');
-var estimatorRouter = require('./routes/estimator');
-var usersRouter = require('./routes/users');
+require('dotenv').config();
 
-var app = express();
+const indexRouter = require('./routes/index');
+const estimatorRouter = require('./routes/estimator');
+const usersRouter = require('./routes/users');
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +29,26 @@ app.use('/estimator', estimatorRouter);
 app.use('/users', usersRouter);
 
 app.use('/modules', express.static(path.join(__dirname, 'node_modules')));
+
+
+
+// session configuration
+app.use(session({
+  secret: process.env.SESSIONS_SECRET_KEY,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true },
+}));
+
+app.use((req, res, next) => {
+  if (!req.session.userId) {
+    req.session.userId = uuidv4();
+    console.log(req.session.userId);
+  }
+  
+  next();
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
