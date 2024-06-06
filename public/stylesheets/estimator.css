@@ -9,6 +9,10 @@
   --sm-border-radius: 5px;
 }
 
+.header {
+  display: flex;
+}
+
 body {
   margin: 0;
   background-color: #ffffff;
@@ -132,7 +136,20 @@ input#stl-import {
 }
 
 input#proceed,
-input#config-submit {
+#add-to-cart {
   flex: 0 1 auto;
   margin-top: auto;
+}
+
+#add-to-cart {
+  flex: 0 1 auto;
+  display: flex;
+}
+
+#num-items {
+  flex: 1;
+}
+
+input#config-submit {
+  flex: 3;
 }
