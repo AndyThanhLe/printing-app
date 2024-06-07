@@ -24,30 +24,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/estimator', estimatorRouter);
-app.use('/users', usersRouter);
-
-app.use('/modules', express.static(path.join(__dirname, 'node_modules')));
-
-
 
 // session configuration
 app.use(session({
   secret: process.env.SESSIONS_SECRET_KEY,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true },
+  // cookie: { secure: true },
 }));
-
 app.use((req, res, next) => {
   if (!req.session.userId) {
     req.session.userId = uuidv4();
-    console.log(req.session.userId);
+    // console.log(req.session.userId);
   }
   
   next();
 });
+
+app.use('/', indexRouter);
+app.use('/estimator', estimatorRouter);
+app.use('/users', usersRouter);
+
+app.use('/modules', express.static(path.join(__dirname, 'node_modules')));
 
 
 // catch 404 and forward to error handler
