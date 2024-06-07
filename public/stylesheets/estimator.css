@@ -126,8 +126,9 @@ input[type=submit] {
 }
 
 input[type=button]:hover,
-input[type=submit]:hover {
-  background-color: #28cb1c;
+input[type=submit]:hover,
+.import-selected {
+  background-color: #28cb1c !important;
 }
 
 input#stl-import {

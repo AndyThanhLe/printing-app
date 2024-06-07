@@ -2,12 +2,12 @@ import { loadSTL, removeSTL } from './three-preview.js';
 
 
 // Declare variables and constants
-const modelFiles = {}
-
+const modelConfigs = {};
 
 /**
  * Event Listeners
  */
+
 // Deal with file import
 document.getElementById('stl-import').addEventListener('click', () => {
   document.getElementById('file-submission').click();
@@ -16,21 +16,28 @@ document.getElementById('file-submission').addEventListener('change', upload);
 
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
+  // verify that data is submittable...
+
+
   const response = await fetch(`${window.location.pathname}/submit`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      "material": document.getElementsByName('material')[0].value,
-      "colour": document.getElementsByName('colour')[0].value,
-      "printer": document.getElementsByName('printer')[0].value,
-      "infill": document.getElementsByName('infill')[0].value,
+      'fileName': '',
+      'material': document.getElementsByName('material')[0].value,
+      'colour': document.getElementsByName('colour')[0].value,
+      'printer': document.getElementsByName('printer')[0].value,
+      'infill': document.getElementsByName('infill')[0].value,
+      'quantity': document.getElementsByName('quantity')[0].value,
     }),
   });
 
   // redirect...
 });
+
+
 
 
 
@@ -59,7 +66,8 @@ async function upload() {
         console.log(r);
         // TODO: make these actions into a function
         createSTLButton(r);
-        updateActiveSTL(r);
+        updateActiveSTL(r.fileName);
+        adjustConfigurations(r);
       })
       .catch((r) => {
         console.log(r);
@@ -73,30 +81,47 @@ async function upload() {
   document.getElementById('file-submission').value = '';
 }
 
+function adjustConfigurations(r) {
+  modelConfigs[r.fileName] = {
+    'material': '',
+    'colour': '',
+    'printer': '',
+    'infill': 15,
+    'quantity': 1,
+  }
+}
 
-function updateActiveSTL(r) {
-  loadSTL(r.fileName);
+function updateActiveSTL(fileName) {
+  const active = document.querySelectorAll('.import-selected');
+
+  for (let i = 0; i < active.length; i++) {
+    active[i].classList.remove('import-selected');
+  }
+
+  const children = document.getElementById(`stl-${(fileName)}`).childNodes;
+  for (let i = 0; i < children.length; i++) {
+    children[i].classList.add('import-selected');
+  }
+
+  loadSTL(fileName);
 }
 
 
 function createSTLButton(r) {
   const fileName = r.fileName;
-  const id = removeExtension(fileName);
-
-  console.log(id);
 
   const stls = document.getElementById('stls');
 
   const stl = document.createElement('div');
   stl.className = 'stl';
-  stl.id = `stl-${id}`;
+  stl.id = `stl-${fileName}`;
 
   const inp = document.createElement('input');
-  inp.id = `stl-data-${id}`;
+  inp.id = `stl-data-${fileName}`;
   inp.type = 'button';
-  inp.value = `${id}`;
+  inp.value = `${"wow!"}`;
   inp.addEventListener('click', async function() {
-    loadSTL(fileName);
+    updateActiveSTL(fileName);
   });
   stl.appendChild(inp);
 
@@ -125,8 +150,9 @@ function createSTLButton(r) {
 
       response.json()
         .then((r) => {
+          console.log(fileName);
           removeSTL(fileName);
-          const element = document.getElementById(`stl-${removeExtension(fileName)}`);
+          const element = document.getElementById(`stl-${fileName}`);
           element.remove();
         })
         .catch((e) => {

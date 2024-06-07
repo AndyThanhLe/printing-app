@@ -65,13 +65,19 @@ router.delete('/remove', (req, res, next) => {
 
 /* POST form submission */
 router.post('/submit', (req, res, next) => {
+  // Add to session data...
   console.log(req.body.material);
   console.log(req.body.colour);
   console.log(req.body.printer);
   console.log(req.body.infill);
+  console.log(req.body.quantity);
+
+  // return the number of cart items...
 
   // send back data on where to redirect
-  res.redirect('../');
+  res.json({
+    'redirect': '../'
+  });
 })
 
 module.exports = router;
