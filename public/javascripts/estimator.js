@@ -17,7 +17,7 @@ document.getElementById('file-submission').addEventListener('change', upload);
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
   // verify that data is submittable...
-
+  
 
   const response = await fetch(`${window.location.pathname}/submit`, {
     method: 'POST',
@@ -38,9 +38,6 @@ document.getElementById('config-submit').addEventListener('click', async functio
 });
 
 
-
-
-
 async function upload() {
   if (document.getElementById('file-submission').files.length == 0) {
     return;
@@ -59,13 +56,11 @@ async function upload() {
       throw new Error(response.statusText);
     }
 
-    console.log(document.getElementById('file-submission').files[0]);
-
     response.json()
       .then((r) => {
         console.log(r);
         // TODO: make these actions into a function
-        createSTLButton(r);
+        createSTLButton(r.fileName, removeExtension(r.modelName));
         updateActiveSTL(r.fileName);
         adjustConfigurations(r);
       })
@@ -107,9 +102,7 @@ function updateActiveSTL(fileName) {
 }
 
 
-function createSTLButton(r) {
-  const fileName = r.fileName;
-
+function createSTLButton(fileName, modelName) {
   const stls = document.getElementById('stls');
 
   const stl = document.createElement('div');
@@ -119,7 +112,7 @@ function createSTLButton(r) {
   const inp = document.createElement('input');
   inp.id = `stl-data-${fileName}`;
   inp.type = 'button';
-  inp.value = `${"wow!"}`;
+  inp.value = modelName;
   inp.addEventListener('click', async function() {
     updateActiveSTL(fileName);
   });

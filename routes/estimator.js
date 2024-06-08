@@ -34,15 +34,19 @@ const upload = multer({
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
+  console.log(`The session id is: ${req.session.userId}`);
   res.render('estimator', { title: 'Estimator' });
 });
+
 
 /* PUT file submission */
 router.put('/upload', upload.single('stl-file'), (req, res, next) => {
   res.json({
     fileName: req.file.filename,
+    modelName: req.file.originalname,
   });
 });
+
 
 /* DELETE file removal */
 router.delete('/remove', (req, res, next) => {
@@ -60,7 +64,6 @@ router.delete('/remove', (req, res, next) => {
     success: true,
   })
 });
-
 
 
 /* POST form submission */
