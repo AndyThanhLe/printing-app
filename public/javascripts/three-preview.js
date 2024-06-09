@@ -105,10 +105,15 @@ export function loadSTL(fileName) {
     mesh = new THREE.Mesh( geometry, material );
 
     // TODO: Scale and rotate accordingly
-    // mesh.scale.set(0.05, 0.05, 0.05);
     // mesh.rotateY(- Math.PI / 2);
     // mesh.rotateX(- Math.PI / 2);
-    
+    const boundingBox = new THREE.Box3().setFromObject(mesh);
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+
+    // Check that the file is within the bounds of the selected printer
+    console.log(size);
+
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     
