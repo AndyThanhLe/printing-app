@@ -10,9 +10,11 @@ require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const estimatorRouter = require('./routes/estimator');
+const checkoutRouter = require('./routes/checkout');
 const usersRouter = require('./routes/users');
 
 const app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +45,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/estimator', estimatorRouter);
+app.use('/checkout', checkoutRouter);
 app.use('/users', usersRouter);
 
 app.use('/modules', express.static(path.join(__dirname, 'node_modules')));
