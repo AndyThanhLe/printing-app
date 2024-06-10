@@ -4,12 +4,28 @@ import { loadSTL, removeSTL, getActive } from './three-preview.js';
 // Declare variables and constants
 let stls;
 let stl, inp, del;
-const modelConfigs = {};
+let modelConfigs;
 
 
 /**
  * Event Listeners
  */
+
+window.onload = () => {
+  if (sessionStorage.getItem('modelConfigs')) {
+    modelConfigs = JSON.parse(sessionStorage.getItem('modelConfigs'));
+
+    for (const key in modelConfigs) {
+      createSTLButton(key, modelConfigs[key].name);
+    }
+  }
+  else {
+    modelConfigs = {};
+  }
+};
+
+
+
 
 // Deal with file import
 document.getElementById('stl-import').addEventListener('click', () => {
@@ -79,6 +95,7 @@ async function upload() {
 
         // add to model configurations
         modelConfigs[r.fileName] = {
+          'name': r.modelName,
           'material': '',
           'colour': '',
           'printer': undefined,
@@ -130,23 +147,27 @@ function updateActiveSTL(fileName) {
 
   loadSTL(fileName);
   loadConfiguration(fileName);
+  saveConfiguration(fileName);
 }
 
 
 function saveConfiguration(fileName) {
   // update the saved configuration details
   modelConfigs[fileName] = {
+    ...modelConfigs[fileName],
     'material': document.getElementById('material').value,
     'colour': document.getElementById('colour').value,
     'printer': document.querySelector('input[name="printer"]:checked')?.value,
     'infill': document.getElementById('infill').value,
     'quantity': document.getElementById('quantity').value,
   };
+
+  sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+  console.log(sessionStorage);
 }
 
 
 function loadConfiguration(fileName) {
-  // TODO: Adjust the inputs with the saved data
   const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
   
   document.getElementById('material').value = material;
@@ -163,6 +184,11 @@ function loadConfiguration(fileName) {
 
   document.getElementById('infill').value = infill;
   document.getElementById('quantity').value = quantity;
+}
+
+function removeConfiguration(fileName) {
+  delete modelConfigs[fileName];
+  sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
 }
 
 
@@ -211,6 +237,7 @@ function createSTLButton(fileName, modelName) {
           removeSTL(fileName);
           const element = document.getElementById(`stl-${fileName}`);
           element.remove();
+          removeConfiguration(fileName);
         })
         .catch((e) => {
           console.log(e);
@@ -224,9 +251,6 @@ function createSTLButton(fileName, modelName) {
 
   stls.append(stl);
 }
-
-
-
 
 
 function removeExtension(s) {
