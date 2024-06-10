@@ -1,8 +1,11 @@
-import { loadSTL, removeSTL } from './three-preview.js';
+import { loadSTL, removeSTL, getActive } from './three-preview.js';
 
 
 // Declare variables and constants
+let stls;
+let stl, inp, del;
 const modelConfigs = {};
+
 
 /**
  * Event Listeners
@@ -13,6 +16,12 @@ document.getElementById('stl-import').addEventListener('click', () => {
   document.getElementById('file-submission').click();
 });
 document.getElementById('file-submission').addEventListener('change', upload);
+
+
+
+
+
+
 
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
@@ -38,7 +47,14 @@ document.getElementById('config-submit').addEventListener('click', async functio
 });
 
 
+
+
+
+
+
+
 async function upload() {
+  // no file is selected
   if (document.getElementById('file-submission').files.length == 0) {
     return;
   }
@@ -56,13 +72,21 @@ async function upload() {
       throw new Error(response.statusText);
     }
 
+    //  { <fileName> , <modelName> }
     response.json()
       .then((r) => {
-        console.log(r);
-        // TODO: make these actions into a function
         createSTLButton(r.fileName, removeExtension(r.modelName));
+
+        // add to model configurations
+        modelConfigs[r.fileName] = {
+          'material': '',
+          'colour': '',
+          'printer': undefined,
+          'infill': 15,
+          'quantity': 1,
+        };
+
         updateActiveSTL(r.fileName);
-        adjustConfigurations(r);
       })
       .catch((r) => {
         console.log(r);
@@ -76,17 +100,23 @@ async function upload() {
   document.getElementById('file-submission').value = '';
 }
 
-function adjustConfigurations(r) {
-  modelConfigs[r.fileName] = {
-    'material': '',
-    'colour': '',
-    'printer': '',
-    'infill': 15,
-    'quantity': 1,
-  }
-}
+
+
+
+
+
+
+
+
+
 
 function updateActiveSTL(fileName) {
+  // save the current configuration
+  let prev = getActive();
+  if (prev) {
+    saveConfiguration(getActive());
+  }
+
   const active = document.querySelectorAll('.import-selected');
 
   for (let i = 0; i < active.length; i++) {
@@ -99,32 +129,67 @@ function updateActiveSTL(fileName) {
   }
 
   loadSTL(fileName);
+  loadConfiguration(fileName);
 }
 
 
-function createSTLButton(fileName, modelName) {
-  const stls = document.getElementById('stls');
+function saveConfiguration(fileName) {
+  // update the saved configuration details
+  modelConfigs[fileName] = {
+    'material': document.getElementById('material').value,
+    'colour': document.getElementById('colour').value,
+    'printer': document.querySelector('input[name="printer"]:checked')?.value,
+    'infill': document.getElementById('infill').value,
+    'quantity': document.getElementById('quantity').value,
+  };
+}
 
-  const stl = document.createElement('div');
+
+function loadConfiguration(fileName) {
+  // TODO: Adjust the inputs with the saved data
+  const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
+  
+  document.getElementById('material').value = material;
+  document.getElementById('colour').value = colour;
+
+  document.getElementsByName('printer').forEach((r) => {
+    if (r.value == printer) {
+      r.checked = true;
+    }
+    else {
+      r.checked = false;
+    }
+  });
+
+  document.getElementById('infill').value = infill;
+  document.getElementById('quantity').value = quantity;
+}
+
+
+
+
+function createSTLButton(fileName, modelName) {
+  stls = document.getElementById('stls');
+
+  stl = document.createElement('div');
   stl.className = 'stl';
   stl.id = `stl-${fileName}`;
 
-  const inp = document.createElement('input');
+  inp = document.createElement('input');
   inp.id = `stl-data-${fileName}`;
   inp.type = 'button';
   inp.value = modelName;
-  inp.addEventListener('click', async function() {
+  inp.addEventListener('click', async () => {
     updateActiveSTL(fileName);
   });
   stl.appendChild(inp);
 
-  const del = document.createElement('input');
+  del = document.createElement('input');
   del.id = `stl-del-${fileName}`;
   del.type = 'button';
   del.value = `Delete`;
-  del.addEventListener('click', async function() {
+  del.addEventListener('click', async function () {
     const fileName = this.id.split('-').pop();
-    console.log(fileName); 
 
     try {
       const response = await fetch(`${window.location.pathname}/remove`, {
@@ -143,7 +208,6 @@ function createSTLButton(fileName, modelName) {
 
       response.json()
         .then((r) => {
-          console.log(fileName);
           removeSTL(fileName);
           const element = document.getElementById(`stl-${fileName}`);
           element.remove();
@@ -160,6 +224,10 @@ function createSTLButton(fileName, modelName) {
 
   stls.append(stl);
 }
+
+
+
+
 
 function removeExtension(s) {
   return s.replace(/\.stl$/, '');

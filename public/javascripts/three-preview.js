@@ -132,3 +132,8 @@ export function removeSTL(fileName) {
   }
   delete stls.fileName;
 }
+
+
+export function getActive() {
+  return active;
+}
