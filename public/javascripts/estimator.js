@@ -4,6 +4,7 @@ import { loadSTL, removeSTL, getActive } from './three-preview.js';
 let stls;
 let stl, inp, del;
 let modelConfigs;
+let cart;
 
 /**
  * Event Listeners
@@ -19,6 +20,13 @@ window.onload = () => {
   }
   else {
     modelConfigs = {};
+  }
+
+  if (sessionStorage.getItem('cart')) {
+    cart = JSON.parse(sessionStorage.getItem('cart'));
+  }
+  else {
+    cart = {};
   }
 };
 
@@ -39,28 +47,51 @@ document.getElementById('file-submission').addEventListener('change', upload);
 
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
+  const fileName = getActive();
+
+  if (!fileName) {
+    // TODO: prompt indicating empty submission
+    return;
+  }
+
+  saveConfiguration(fileName);
+
+  cart[fileName] = { ...modelConfigs[fileName] };
+
+  updateCart();
+
   // verify that data is submittable...
-  
 
-  const response = await fetch(`${window.location.pathname}submit/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      'fileName': '',
-      'material': document.getElementsByName('material')[0].value,
-      'colour': document.getElementsByName('colour')[0].value,
-      'printer': document.getElementsByName('printer')[0].value,
-      'infill': document.getElementsByName('infill')[0].value,
-      'quantity': document.getElementsByName('quantity')[0].value,
-    }),
-  });
+  // const response = await fetch(`${window.location.pathname}submit/`, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     'fileName': '',
+  //     'material': document.getElementsByName('material')[0].value,
+  //     'colour': document.getElementsByName('colour')[0].value,
+  //     'printer': document.getElementsByName('printer')[0].value,
+  //     'infill': document.getElementsByName('infill')[0].value,
+  //     'quantity': document.getElementsByName('quantity')[0].value,
+  //   }),
+  // });
 
-  // redirect...
+  // // redirect...
 
-  window.location.href = '/checkout';
+  // window.location.href = '/checkout';
 });
+
+
+function updateCart() {
+  let numItems = 0;
+  
+  for (const key in cart) {
+    numItems += +cart[key].quantity;
+  }
+
+  console.log(numItems);
+}
 
 
 
@@ -91,18 +122,6 @@ async function upload() {
   response.json()
     .then((r) => {
       createSTLButton(r.fileName, removeExtension(r.modelName));
-
-      // add to model configurations
-      modelConfigs[r.fileName] = {
-        'name': r.modelName,
-        'material': '',
-        'colour': '',
-        'printer': undefined,
-        'infill': 15,
-        'quantity': 1,
-      };
-      saveConfiguration(r.fileName);
-
       updateActiveSTL(r.fileName);
     })
     .catch((r) => {
@@ -157,11 +176,21 @@ function saveConfiguration(fileName) {
   };
 
   sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
-  console.log(sessionStorage);
 }
 
 
 function loadConfiguration(fileName) {
+  // configuration hasn't been added yet
+  if (!modelConfigs[fileName]) {
+    modelConfigs[fileName] = {
+      'material': '',
+      'colour': '',
+      'printer': undefined,
+      'infill': 15,
+      'quantity': 1,
+    };
+  }
+
   const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
   
   document.getElementById('material').value = material;
