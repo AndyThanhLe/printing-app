@@ -122,6 +122,19 @@ async function upload() {
   response.json()
     .then((r) => {
       createSTLButton(r.fileName, removeExtension(r.modelName));
+
+      // add config
+      modelConfigs[r.fileName] = {
+        'name': r.modelName,
+        'material': '',
+        'colour': '',
+        'printer': undefined,
+        'infill': 15,
+        'quantity': 1,
+      };
+      sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+
+
       updateActiveSTL(r.fileName);
     })
     .catch((r) => {
@@ -180,17 +193,6 @@ function saveConfiguration(fileName) {
 
 
 function loadConfiguration(fileName) {
-  // configuration hasn't been added yet
-  if (!modelConfigs[fileName]) {
-    modelConfigs[fileName] = {
-      'material': '',
-      'colour': '',
-      'printer': undefined,
-      'infill': 15,
-      'quantity': 1,
-    };
-  }
-
   const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
   
   document.getElementById('material').value = material;
