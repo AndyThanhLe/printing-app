@@ -4,13 +4,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+
 // Declare variables and constants
 
 
 // Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, process.env.MODEL_UPLOAD_DIRECTORY);
+    cb(null, path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId));
   }, 
   filename: (req, file, cb) => {
     const re = /(?:\.([^.]+))?$/;
@@ -19,10 +20,7 @@ const storage = multer.diskStorage({
       cb(new Error('The file is not an stl file!'));
     }
     else {
-      // would it be worth it to perform some kind of encryption and use a dictionary or something to hide the data
-
       cb(null, `${Date.now()}.stl`);
-      // cb(null, `${file.originalname}`);
     }
   }
 });
@@ -35,6 +33,13 @@ const upload = multer({
 /* GET home page. */
 router.get('/', (req, res, next) => {
   console.log(`The session id is: ${req.session.userId}`);
+
+  // directory the user's uploaded files will be stored at
+  let dir = path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
   res.render('estimator', { title: 'Estimator' });
 });
 
@@ -50,10 +55,7 @@ router.put('/upload', upload.single('stl-file'), (req, res, next) => {
 
 /* DELETE file removal */
 router.delete('/remove', (req, res, next) => {
-  console.log(req.body.id);
-
-  // TODO: delete file from the server!
-  fs.unlink(`${process.env.MODEL_UPLOAD_DIRECTORY}${req.body.id}`, (error) => {
+  fs.unlink(path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId, req.body.id), (error) => {
     if (error) {
       throw error;
     }
@@ -76,11 +78,20 @@ router.post('/submit', (req, res, next) => {
   console.log(req.body.quantity);
 
   // return the number of cart items...
+  // this will be tracked in the session data...
 
   // send back data on where to redirect
   res.json({
     'redirect': '../'
   });
-})
+});
+
+
+router.get('/get-model/:fileName', (req, res, next) => {
+  res.json({
+    'filePath': path.join('..', 'models', req.session.userId, req.params.fileName),
+  });
+});
+
 
 module.exports = router;

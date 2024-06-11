@@ -90,7 +90,7 @@ function onWindowResize() {
 }
 
 
-export function loadSTL(fileName) {
+export async function loadSTL(fileName) {
   if (active == fileName) {
     return;
   }
@@ -100,28 +100,46 @@ export function loadSTL(fileName) {
     active = null;
   }
 
-  loader.load(`../models/${fileName}`, (geometry) => {
-    material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
-    mesh = new THREE.Mesh( geometry, material );
 
-    // TODO: Scale and rotate accordingly
-    // mesh.rotateY(- Math.PI / 2);
-    // mesh.rotateX(- Math.PI / 2);
-    const boundingBox = new THREE.Box3().setFromObject(mesh);
-    const size = new THREE.Vector3();
-    boundingBox.getSize(size);
+  // retrieve the path to the file from the server, verifying that it is there
 
-    // Check that the file is within the bounds of the selected printer
-    console.log(size);
 
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    
-    stls[fileName] = mesh;
+  const response = await fetch(`${window.location.pathname}get-model/${fileName}`);
 
-    scene.add(mesh);
-    active = fileName;
-  });
+  if (!response.ok) {
+    // TODO: Handle it
+  }
+
+  response.json()
+    .then((r) => {
+      console.log(r.filePath);
+
+      loader.load(r.filePath, (geometry) => {
+        material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
+        mesh = new THREE.Mesh( geometry, material );
+
+        // TODO: Scale and rotate accordingly
+        // mesh.rotateY(- Math.PI / 2);
+        // mesh.rotateX(- Math.PI / 2);
+        const boundingBox = new THREE.Box3().setFromObject(mesh);
+        const size = new THREE.Vector3();
+        boundingBox.getSize(size);
+
+        // Check that the file is within the bounds of the selected printer
+        console.log(size);
+
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        
+        stls[fileName] = mesh;
+
+        scene.add(mesh);
+        active = fileName;
+      });
+    })
+    .catch((r) => 
+      console.log(r)
+    );
 }
 
 

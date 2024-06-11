@@ -1,11 +1,9 @@
 import { loadSTL, removeSTL, getActive } from './three-preview.js';
 
-
 // Declare variables and constants
 let stls;
 let stl, inp, del;
 let modelConfigs;
-
 
 /**
  * Event Listeners
@@ -44,7 +42,7 @@ document.getElementById('config-submit').addEventListener('click', async functio
   // verify that data is submittable...
   
 
-  const response = await fetch(`${window.location.pathname}/submit`, {
+  const response = await fetch(`${window.location.pathname}submit/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -60,6 +58,8 @@ document.getElementById('config-submit').addEventListener('click', async functio
   });
 
   // redirect...
+
+  window.location.href = '/checkout';
 });
 
 
@@ -78,41 +78,36 @@ async function upload() {
   const formData = new FormData();
   formData.append('stl-file', document.getElementById('file-submission').files[0]);
 
-  try {
-    const response = await fetch(`${window.location.pathname}/upload`, {
-      method: 'PUT',
-      body: formData,
+  const response = await fetch(`${window.location.pathname}upload/`, {
+    method: 'PUT',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  //  { <fileName> , <modelName> }
+  response.json()
+    .then((r) => {
+      createSTLButton(r.fileName, removeExtension(r.modelName));
+
+      // add to model configurations
+      modelConfigs[r.fileName] = {
+        'name': r.modelName,
+        'material': '',
+        'colour': '',
+        'printer': undefined,
+        'infill': 15,
+        'quantity': 1,
+      };
+      saveConfiguration(r.fileName);
+
+      updateActiveSTL(r.fileName);
+    })
+    .catch((r) => {
+      console.log(r);
     });
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    //  { <fileName> , <modelName> }
-    response.json()
-      .then((r) => {
-        createSTLButton(r.fileName, removeExtension(r.modelName));
-
-        // add to model configurations
-        modelConfigs[r.fileName] = {
-          'name': r.modelName,
-          'material': '',
-          'colour': '',
-          'printer': undefined,
-          'infill': 15,
-          'quantity': 1,
-        };
-
-        updateActiveSTL(r.fileName);
-      })
-      .catch((r) => {
-        console.log(r);
-      });
-
-  }
-  catch (error) {
-    console.error(`An error has occurred!: ${error}`);
-  }
   
   document.getElementById('file-submission').value = '';
 }
@@ -147,7 +142,6 @@ function updateActiveSTL(fileName) {
 
   loadSTL(fileName);
   loadConfiguration(fileName);
-  saveConfiguration(fileName);
 }
 
 
@@ -217,35 +211,30 @@ function createSTLButton(fileName, modelName) {
   del.addEventListener('click', async function () {
     const fileName = this.id.split('-').pop();
 
-    try {
-      const response = await fetch(`${window.location.pathname}/remove`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          'id': fileName,
-        }),
+    const response = await fetch(`${window.location.pathname}remove/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'id': fileName,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Issue deleting the file!')
+    }
+
+    response.json()
+      .then((r) => {
+        removeSTL(fileName);
+        const element = document.getElementById(`stl-${fileName}`);
+        element.remove();
+        removeConfiguration(fileName);
+      })
+      .catch((e) => {
+        console.log(e);
       });
-
-      if (!response.ok) {
-        throw new Error('Issue deleting the file!')
-      }
-
-      response.json()
-        .then((r) => {
-          removeSTL(fileName);
-          const element = document.getElementById(`stl-${fileName}`);
-          element.remove();
-          removeConfiguration(fileName);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-    catch (error) {
-      console.log(error);
-    }
   });
   stl.appendChild(del);
 
