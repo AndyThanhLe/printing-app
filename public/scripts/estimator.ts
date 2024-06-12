@@ -1,6 +1,9 @@
 import { loadSTL, removeSTL, getActive } from './three-preview.js';
 
-// Interfaces
+
+/**
+ * Interfaces
+ */
 interface Configurations {
   [fileName: string]: Configuration;
 }
@@ -15,20 +18,22 @@ interface Configuration {
 }
 
 
-// Declare variables and constants
+/**
+ * Constants and variables
+ */
+let modelConfigs: Configurations;
+let cart: Configurations;
+
 let stls: HTMLDivElement;
 let stl: HTMLDivElement;
 let inp: HTMLInputElement;
 let del: HTMLInputElement;
 
-let modelConfigs: Configurations;
-let cart: Configurations;
-
 
 /**
  * Event Listeners
  */
-
+// Initial loading of document
 window.onload = () => {
   if (sessionStorage.getItem('modelConfigs')) {
     modelConfigs = JSON.parse(sessionStorage.getItem('modelConfigs'));
@@ -49,20 +54,11 @@ window.onload = () => {
   }
 };
 
-
-
-
 // Deal with file import
 document.getElementById('stl-import').addEventListener('click', () => {
   document.getElementById('file-submission').click();
 });
 document.getElementById('file-submission').addEventListener('change', upload);
-
-
-
-
-
-
 
 // Deal with submission
 document.getElementById('config-submit').addEventListener('click', async function () {
@@ -78,27 +74,6 @@ document.getElementById('config-submit').addEventListener('click', async functio
   cart[fileName] = { ...modelConfigs[fileName] };
 
   updateCart();
-
-  // verify that data is submittable...
-
-  // const response = await fetch(`${window.location.pathname}submit/`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     'fileName': '',
-  //     'material': document.getElementsByName('material')[0].value,
-  //     'colour': document.getElementsByName('colour')[0].value,
-  //     'printer': document.getElementsByName('printer')[0].value,
-  //     'infill': document.getElementsByName('infill')[0].value,
-  //     'quantity': document.getElementsByName('quantity')[0].value,
-  //   }),
-  // });
-
-  // // redirect...
-
-  // window.location.href = '/checkout';
 });
 
 
@@ -113,12 +88,6 @@ function updateCart() {
 }
 
 
-
-
-
-
-
-
 async function upload() {
   const fileInput = document.getElementById('file-submission') as HTMLInputElement;
 
@@ -126,11 +95,10 @@ async function upload() {
     return;
   }
 
-
   const formData = new FormData();
   formData.append('stl-file', fileInput.files[0]);
 
-  fetch(`${window.location.pathname}/upload/`, {
+  await fetch(`${window.location.pathname}/upload/`, {
     method: 'PUT',
     body: formData,
   })
@@ -162,8 +130,6 @@ async function upload() {
 
   fileInput.value = '';
 }
-
-
 
 
 function updateActiveSTL(fileName) {
@@ -229,12 +195,11 @@ function loadConfiguration(fileName: string) {
   (document.getElementById('quantity') as HTMLInputElement).value = quantity.toString();
 }
 
-function removeConfiguration(fileName) {
+
+function removeConfiguration(fileName: string) {
   delete modelConfigs[fileName];
   sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
 }
-
-
 
 
 function createSTLButton(fileName: string, modelName: string) {
@@ -260,7 +225,7 @@ function createSTLButton(fileName: string, modelName: string) {
   del.addEventListener('click', async function () {
     const fileName = this.id.split('-').pop();
 
-    const response = await fetch(`${window.location.pathname}remove/`, {
+    await fetch(`${window.location.pathname}remove/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -268,23 +233,22 @@ function createSTLButton(fileName: string, modelName: string) {
       body: JSON.stringify({
         'id': fileName,
       }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Issue sending delete request to server!');
+      }
+
+      return response.json();
+    }).then((data) => {
+      removeSTL(fileName);
+      
+      document.getElementById(`stl-${fileName}`).remove();
+      removeConfiguration(fileName);
+    }).catch((error) => {
+      console.error(error);
     });
-
-    if (!response.ok) {
-      throw new Error('Issue deleting the file!')
-    }
-
-    response.json()
-      .then((r) => {
-        removeSTL(fileName);
-        const element = document.getElementById(`stl-${fileName}`);
-        element.remove();
-        removeConfiguration(fileName);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
   });
+
   stl.appendChild(del);
 
   stls.append(stl);
