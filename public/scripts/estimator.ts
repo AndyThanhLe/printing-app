@@ -1,10 +1,29 @@
 import { loadSTL, removeSTL, getActive } from './three-preview.js';
 
+// Interfaces
+interface Configurations {
+  [fileName: string]: Configuration;
+}
+
+interface Configuration {
+  name: string;
+  material: string;
+  colour: string;
+  printer: string;
+  infill: number;
+  quantity: number;
+}
+
+
 // Declare variables and constants
-let stls;
-let stl, inp, del;
-let modelConfigs;
-let cart;
+let stls: HTMLDivElement;
+let stl: HTMLDivElement;
+let inp: HTMLInputElement;
+let del: HTMLInputElement;
+
+let modelConfigs: Configurations;
+let cart: Configurations;
+
 
 /**
  * Event Listeners
@@ -101,55 +120,48 @@ function updateCart() {
 
 
 async function upload() {
-  // no file is selected
-  if (document.getElementById('file-submission').files.length == 0) {
+  const fileInput = document.getElementById('file-submission') as HTMLInputElement;
+
+  if (fileInput.files.length == 0) {
     return;
   }
 
-  const formData = new FormData();
-  formData.append('stl-file', document.getElementById('file-submission').files[0]);
 
-  const response = await fetch(`${window.location.pathname}upload/`, {
+  const formData = new FormData();
+  formData.append('stl-file', fileInput.files[0]);
+
+  fetch(`${window.location.pathname}/upload/`, {
     method: 'PUT',
     body: formData,
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    return response.json();
+  })
+  .then((data) => {
+    createSTLButton(data.fileName, removeExtension(data.modelName));
+
+    // add config
+    modelConfigs[data.fileName] = {
+      'name': data.modelName,
+      'material': '',
+      'colour': '',
+      'printer': undefined,
+      'infill': 15,
+      'quantity': 1,
+    };
+    sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+    updateActiveSTL(data.fileName);
+  })
+  .catch((error) => {
+    console.error(error);
   });
 
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  //  { <fileName> , <modelName> }
-  response.json()
-    .then((r) => {
-      createSTLButton(r.fileName, removeExtension(r.modelName));
-
-      // add config
-      modelConfigs[r.fileName] = {
-        'name': r.modelName,
-        'material': '',
-        'colour': '',
-        'printer': undefined,
-        'infill': 15,
-        'quantity': 1,
-      };
-      sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
-
-
-      updateActiveSTL(r.fileName);
-    })
-    .catch((r) => {
-      console.log(r);
-    });
-  
-  document.getElementById('file-submission').value = '';
+  fileInput.value = '';
 }
-
-
-
-
-
-
-
 
 
 
@@ -168,47 +180,53 @@ function updateActiveSTL(fileName) {
   }
 
   const children = document.getElementById(`stl-${(fileName)}`).childNodes;
-  for (let i = 0; i < children.length; i++) {
-    children[i].classList.add('import-selected');
-  }
+  children.forEach((child: HTMLElement) => {
+    child.classList.add('import-selected');
+  });
 
   loadSTL(fileName);
   loadConfiguration(fileName);
 }
 
 
-function saveConfiguration(fileName) {
-  // update the saved configuration details
+function saveConfiguration(fileName: string) {
+  const materialInput = document.getElementById('material') as HTMLInputElement;
+  const colourInput = document.getElementById('colour') as HTMLInputElement;
+  const printerInput = document.querySelector('input[name="printer"]:checked') as HTMLInputElement;
+  const infillInput = document.getElementById('infill') as HTMLInputElement;
+  const quantityInput = document.getElementById('quantity') as HTMLInputElement;
+
   modelConfigs[fileName] = {
     ...modelConfigs[fileName],
-    'material': document.getElementById('material').value,
-    'colour': document.getElementById('colour').value,
-    'printer': document.querySelector('input[name="printer"]:checked')?.value,
-    'infill': document.getElementById('infill').value,
-    'quantity': document.getElementById('quantity').value,
+    'material': materialInput ? materialInput.value : '',
+    'colour': colourInput ? colourInput.value : '',
+    'printer': printerInput ? printerInput.value : '',
+    'infill': infillInput ? +infillInput.value : 15,
+    'quantity': quantityInput ? +quantityInput.value : 1,
   };
 
   sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
 }
 
 
-function loadConfiguration(fileName) {
+function loadConfiguration(fileName: string) {
   const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
   
-  document.getElementById('material').value = material;
-  document.getElementById('colour').value = colour;
+  (document.getElementById('material') as HTMLInputElement).value = material;
+  (document.getElementById('colour') as HTMLInputElement).value = colour;
 
-  document.getElementsByName('printer').forEach((r) => {
-    if (r.value == printer) {
-      r.checked = true;
+  const printerOptions = document.getElementsByName('printer');
+  printerOptions.forEach((option: HTMLInputElement) => {
+    if (option.value == printer) {
+      option.checked = true;
     }
     else {
-      r.checked = false;
+      option.checked = false;
     }
   });
 
-  document.getElementById('infill').value = infill;
-  document.getElementById('quantity').value = quantity;
+  (document.getElementById('infill') as HTMLInputElement).value = infill.toString();
+  (document.getElementById('quantity') as HTMLInputElement).value = quantity.toString();
 }
 
 function removeConfiguration(fileName) {
@@ -219,8 +237,8 @@ function removeConfiguration(fileName) {
 
 
 
-function createSTLButton(fileName, modelName) {
-  stls = document.getElementById('stls');
+function createSTLButton(fileName: string, modelName: string) {
+  stls = document.getElementById('stls') as HTMLDivElement;
 
   stl = document.createElement('div');
   stl.className = 'stl';

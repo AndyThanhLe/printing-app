@@ -1,8 +1,9 @@
-# Directories
+# directories
 node_modules
-*/models/*
+models
+built
 
-# Individual files
+# individual files
 .DS_Store
 .env
 !.gitkeep

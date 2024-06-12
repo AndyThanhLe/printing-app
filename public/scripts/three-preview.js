@@ -102,8 +102,6 @@ export async function loadSTL(fileName) {
 
 
   // retrieve the path to the file from the server, verifying that it is there
-
-
   const response = await fetch(`${window.location.pathname}get-model/${fileName}`);
 
   if (!response.ok) {
