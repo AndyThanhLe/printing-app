@@ -3,8 +3,10 @@
     "outDir": "./public/scripts/built",
     "allowJs": true,
     "module": "es6",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "target": "es5",
     "lib": ["dom", "ES2015"],
   },
-  "include": ["./public/scripts/**/*"]
+  "include": ["./public/scripts/**/*"],
 }

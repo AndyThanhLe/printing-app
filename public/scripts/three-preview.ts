@@ -1,18 +1,22 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-import WebGL from 'three/addons/capabilities/WebGL.js';
+import WebGL from 'three/examples/jsm/capabilities/WebGL';
+
 
 // Declare variables and constants
 const container = document.getElementById('preview');
 
-let camera, renderer, scene;
-let controls;
-let material, mesh;
+let camera: THREE.PerspectiveCamera;
+let renderer: THREE.Renderer;
+let scene: THREE.Scene;
+let controls: OrbitControls;
+let material: THREE.MeshPhongMaterial;
+let mesh: THREE.Mesh;
 
 const loader = new STLLoader();
-const stls = {};
-let active;
+const stls: { [fileName: string]: THREE.Mesh } = {};
+let active: string;
 
 
 init();
@@ -24,6 +28,7 @@ else {
   const warning = WebGL.getWebGLErrorMessage();
   document.body.appendChild(warning);
 }
+
 
 function animate() {
   requestAnimationFrame(animate);
@@ -102,7 +107,7 @@ export async function loadSTL(fileName) {
 
 
   // retrieve the path to the file from the server, verifying that it is there
-  const response = await fetch(`${window.location.pathname}get-model/${fileName}`);
+  const response = await fetch(`${window.location.pathname}/get-model/${fileName}`);
 
   if (!response.ok) {
     // TODO: Handle it

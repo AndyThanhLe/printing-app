@@ -1,6 +1,5 @@
 import { loadSTL, removeSTL, getActive } from './three-preview.js';
 
-
 /**
  * Interfaces
  */
@@ -122,6 +121,7 @@ async function upload() {
       'quantity': 1,
     };
     sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+
     updateActiveSTL(data.fileName);
   })
   .catch((error) => {
@@ -225,7 +225,7 @@ function createSTLButton(fileName: string, modelName: string) {
   del.addEventListener('click', async function () {
     const fileName = this.id.split('-').pop();
 
-    await fetch(`${window.location.pathname}remove/`, {
+    await fetch(`${window.location.pathname}/remove/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
