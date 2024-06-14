@@ -5,7 +5,7 @@ import WebGL from 'three/examples/jsm/capabilities/WebGL';
 
 
 // Declare variables and constants
-const container = document.getElementById('preview');
+const container = document.getElementById('preview') as HTMLDivElement;
 
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.Renderer;
@@ -95,7 +95,7 @@ function onWindowResize() {
 }
 
 
-export async function loadSTL(fileName) {
+export async function loadSTL(fileName: string) {
   if (active == fileName) {
     return;
   }
@@ -107,17 +107,18 @@ export async function loadSTL(fileName) {
 
 
   // retrieve the path to the file from the server, verifying that it is there
-  const response = await fetch(`${window.location.pathname}/get-model/${fileName}`);
+  await fetch(`${window.location.pathname}/get-model/${fileName}`)
+    .then((response => {
+      if (!response.ok) {
+        throw new Error('Failed to update the model');
+      }
 
-  if (!response.ok) {
-    // TODO: Handle it
-  }
+      return response.json();
+    }))
+    .then((data) => {
+      console.log(data.filePath);
 
-  response.json()
-    .then((r) => {
-      console.log(r.filePath);
-
-      loader.load(r.filePath, (geometry) => {
+      loader.load(data.filePath, (geometry) => {
         material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
         mesh = new THREE.Mesh( geometry, material );
 
@@ -139,10 +140,12 @@ export async function loadSTL(fileName) {
         scene.add(mesh);
         active = fileName;
       });
+
     })
-    .catch((r) => 
-      console.log(r)
-    );
+    .catch((error) => {
+      console.error(error);
+    });
+    
 }
 
 
