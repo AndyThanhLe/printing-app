@@ -239,7 +239,7 @@ function createSTLButton(fileName: string, modelName: string) {
       }
 
       return response.json();
-    }).then((data) => {
+    }).then((_) => {
       removeSTL(fileName);
       
       document.getElementById(`stl-${fileName}`).remove();
@@ -255,6 +255,6 @@ function createSTLButton(fileName: string, modelName: string) {
 }
 
 
-function removeExtension(s) {
-  return s.replace(/\.stl$/, '');
+function removeExtension(fileName: string) {
+  return fileName.replace(/\.stl$/, '');
 }
