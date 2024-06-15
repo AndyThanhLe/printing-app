@@ -3,9 +3,11 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { MongoClient } = require('mongodb');
 
 
 // Declare variables and constants
+
 
 
 // Multer setup
@@ -90,6 +92,87 @@ router.post('/submit', (req, res, next) => {
 router.get('/get-model/:fileName', (req, res, next) => {
   res.json({
     'filePath': path.join('..', 'models', req.session.userId, req.params.fileName),
+  });
+});
+
+
+router.get('/get-materials', async (req, res, next) => {
+  const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+  const materials = [];
+
+  try {
+    await client.connect();
+
+    const db = client.db(process.env.MONGODB_DATABASE_NAME);
+
+    const cursor = db.collection('filaments').aggregate([
+      {
+        $group: {
+          _id: { 'material': '$material' }
+        }
+      },
+      {
+        $sort: { '_id.material': 1 }
+      }
+    ]);
+
+    for await (const document of cursor) {
+      materials.push(document._id.material);
+    }
+  }
+  catch (e) {
+    materials = [];
+    console.error(e);
+  }
+  finally {
+    await client.close();
+  }
+
+  res.json({
+    materials: materials,
+  });
+});
+
+router.get('/get-colours', async (req, res, next) => {
+  const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+  const colours = [];
+
+  try {
+    await client.connect();
+
+    const db = client.db(process.env.MONGODB_DATABASE_NAME);
+
+    const cursor = db.collection('filaments').aggregate([
+      {
+        $match: { material: req.params.material }
+      },
+      {
+        $group: {
+          _id: { colourName: '$colourName', colourHex: '$colourHex' }
+        }
+      },
+      {
+        $sort: { '_id.colourName': 1 }
+      },
+    ]);
+
+    for await (const document of cursor) {
+      colours.push({
+        colourName: document._id.colourName,
+        colourHex: document._id.colourHex,
+      });
+    }
+  }
+  catch (e) {
+    colours = [];
+    console.error(e);
+  }
+  finally {
+    await client.close();
+  }
+
+  res.json({
+    colours: colours,
   });
 });
 
