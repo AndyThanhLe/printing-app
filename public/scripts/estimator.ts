@@ -51,16 +51,18 @@ window.onload = () => {
   else {
     cart = {};
   }
+
+  loadConfigurationOptions();
 };
 
 // Deal with file import
-document.getElementById('stl-import').addEventListener('click', () => {
+document.getElementById('stl-import')?.addEventListener('click', () => {
   document.getElementById('file-submission').click();
 });
-document.getElementById('file-submission').addEventListener('change', upload);
+document.getElementById('file-submission')?.addEventListener('change', upload);
 
 // Deal with submission
-document.getElementById('config-submit').addEventListener('click', async function () {
+document.getElementById('config-submit')?.addEventListener('click', async function () {
   const fileName = getActive();
 
   if (!fileName) {
@@ -261,33 +263,183 @@ function removeExtension(fileName: string) {
 
 function loadConfigurationOptions() {
   let configForm = document.getElementById('config-form') as HTMLFormElement;
-  let configInput: HTMLDivElement;
+  let divElement: HTMLDivElement;
+  let labelElement: HTMLLabelElement;
+  let selectElement: HTMLSelectElement;
+  let optionElement: HTMLOptionElement;
+  let inputElement: HTMLInputElement;
+
+
+  // TODO: retrieve this from the db
+  let data = {
+    material: [
+      {
+        value: 'pla',
+        labelElement: 'PLA'
+      },
+      {
+        value: 'petg',
+        labelElement: 'PETG'
+      },
+      {
+        value: 'abs',
+        labelElement: 'ABS'
+      },
+      {
+        value: 'tpu',
+        labelElement: 'TPU'
+      },
+    ],
+    colour: [
+      {
+        colourName: 'black',
+        colourHex: '000000',
+      },
+      {
+        colourName: 'grey',
+        colourHex: 'ABABAB',
+      },
+    ],
+    printer: [
+      {
+        value: 'x1c',
+        labelElement: 'Bambu Lab X1C'
+      },
+      {
+        value: 'e3p',
+        labelElement: 'Creality Ender-2 Pro'
+      },
+      {
+        value: 'e2p',
+        labelElement: 'Creality Ender-2 Pro'
+      },
+    ],
+  };
+
 
   // materials
-  configInput = document.createElement('div');
-  // populate...
-  configForm.append(configInput);
+  divElement = document.createElement('div');
+  divElement.className = 'config-input';
+
+  labelElement = document.createElement('label');
+  labelElement.htmlFor = 'material';
+  labelElement.innerHTML = 'Material:';
+  divElement.appendChild(labelElement);
+  divElement.appendChild(document.createElement('br'));
+
+  selectElement = document.createElement('select');
+  selectElement.id = 'material';
+  selectElement.name = 'material';
+
+  optionElement = document.createElement('option');
+  optionElement.hidden = true;
+  optionElement.disabled = true;
+  optionElement.selected = true;
+  optionElement.value = '';
+  optionElement.innerText = ' -- select an option -- ';
+  selectElement.appendChild(optionElement);
+
+  for (const { value, labelElement } of data.material) {
+    optionElement = document.createElement('option');
+    optionElement.value = value;
+    optionElement.innerText = labelElement;
+    selectElement.appendChild(optionElement);
+  }
+  divElement.appendChild(selectElement);
+  
+  configForm.append(divElement);
+
 
   // colours
-  configInput = document.createElement('div');
-  // populate...
-  configForm.append(configInput);
+  divElement = document.createElement('div');
+  divElement.className = 'config-input';
+
+  labelElement = document.createElement('label');
+  labelElement.htmlFor = 'colour';
+  labelElement.innerHTML = 'Colour:';
+  divElement.appendChild(labelElement);
+  divElement.appendChild(document.createElement('br'));
+
+  selectElement = document.createElement('select');
+  selectElement.id = 'colour';
+  selectElement.name = 'colour';
+
+  optionElement = document.createElement('option');
+  optionElement.hidden = true;
+  optionElement.disabled = true;
+  optionElement.selected = true;
+  optionElement.value = '';
+  optionElement.innerText = ' -- select an option -- ';
+  selectElement.appendChild(optionElement);
+
+  for (const { colourName, colourHex } of data.colour) {
+    optionElement = document.createElement('option');
+    optionElement.value = colourName;
+    optionElement.innerText = colourName;
+    selectElement.appendChild(optionElement);
+  }
+  divElement.appendChild(selectElement);
+
+  configForm.append(divElement);
 
 
-  // printers
-  configInput = document.createElement('div');
-  // populate...
-  configForm.append(configInput);
+
+  // // printers
+  // divElement = document.createElement('div');
+  // divElement.className = 'config-input';
+  // // populate...
+  // configForm.append(divElement);
 
 
   // infill
-  configInput = document.createElement('div');
-  // populate...
-  configForm.append(configInput);
+  divElement = document.createElement('div');
+  divElement.className = 'config-input';
+
+  labelElement = document.createElement('label');
+  labelElement.htmlFor = 'infill';
+  labelElement.innerHTML = 'Infill (%):';
+  divElement.appendChild(labelElement);
+  divElement.appendChild(document.createElement('br'));
+
+  inputElement = document.createElement('input');
+  inputElement.id = 'infill';
+  inputElement.name = 'infill';
+  inputElement.type = 'number';
+  inputElement.min = '10';
+  inputElement.max = '100';
+  inputElement.step = '1';
+  inputElement.value = '15';
+  divElement.appendChild(inputElement);
+
+  configForm.append(divElement);
 
 
   // add to cart
-  configInput = document.createElement('div');
+  divElement = document.createElement('div');
+  divElement.id = 'add-to-cart';
+
   // populate...
-  configForm.append(configInput);
+  labelElement = document.createElement('label');
+  labelElement.htmlFor = 'quantity';
+  labelElement.innerHTML = 'Quantity to order:'
+  labelElement.hidden = true;
+  divElement.appendChild(labelElement);
+
+  inputElement = document.createElement('input');
+  inputElement.id = 'quantity';
+  inputElement.name = 'quantity';
+  inputElement.type = 'number';
+  inputElement.min = '0';
+  inputElement.max = '1000';
+  inputElement.step = '1';
+  inputElement.value = '1';
+  divElement.appendChild(inputElement);
+
+  inputElement = document.createElement('input');
+  inputElement.id = 'config-submit';
+  inputElement.type = 'button';
+  inputElement.value = 'Submit';
+  divElement.appendChild(inputElement);
+
+  configForm.append(divElement);
 }
