@@ -133,7 +133,7 @@ router.get('/get-materials', async (req, res, next) => {
   });
 });
 
-router.get('/get-colours', async (req, res, next) => {
+router.post('/get-colours', async (req, res, next) => {
   const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
   const colours = [];
 
@@ -144,7 +144,7 @@ router.get('/get-colours', async (req, res, next) => {
 
     const cursor = db.collection('filaments').aggregate([
       {
-        $match: { material: req.params.material }
+        $match: { material: req.body.material }
       },
       {
         $group: {

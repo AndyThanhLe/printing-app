@@ -52,7 +52,7 @@ window.onload = () => {
     cart = {};
   }
 
-  loadConfigurationOptions();
+  loadMaterials();
 };
 
 // Deal with file import
@@ -76,6 +76,9 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
 
   updateCart();
 });
+
+// Deal with material change
+document.getElementById('material')?.addEventListener('change', loadColours);
 
 
 function updateCart() {
@@ -126,8 +129,8 @@ async function upload() {
 
     updateActiveSTL(data.fileName);
   })
-  .catch((error) => {
-    console.error(error);
+  .catch((e) => {
+    console.error(e);
   });
 
   fileInput.value = '';
@@ -246,8 +249,8 @@ function createSTLButton(fileName: string, modelName: string) {
       
       document.getElementById(`stl-${fileName}`).remove();
       removeConfiguration(fileName);
-    }).catch((error) => {
-      console.error(error);
+    }).catch((e) => {
+      console.error(e);
     });
   });
 
@@ -261,185 +264,88 @@ function removeExtension(fileName: string) {
   return fileName.replace(/\.stl$/, '');
 }
 
-function loadConfigurationOptions() {
-  let configForm = document.getElementById('config-form') as HTMLFormElement;
-  let divElement: HTMLDivElement;
-  let labelElement: HTMLLabelElement;
+
+async function loadMaterials() {
   let selectElement: HTMLSelectElement;
   let optionElement: HTMLOptionElement;
-  let inputElement: HTMLInputElement;
-
-
-  // TODO: retrieve this from the db
-  let data = {
-    material: [
-      {
-        value: 'pla',
-        labelElement: 'PLA'
-      },
-      {
-        value: 'petg',
-        labelElement: 'PETG'
-      },
-      {
-        value: 'abs',
-        labelElement: 'ABS'
-      },
-      {
-        value: 'tpu',
-        labelElement: 'TPU'
-      },
-    ],
-    colour: [
-      {
-        colourName: 'black',
-        colourHex: '000000',
-      },
-      {
-        colourName: 'grey',
-        colourHex: 'ABABAB',
-      },
-    ],
-    printer: [
-      {
-        value: 'x1c',
-        labelElement: 'Bambu Lab X1C'
-      },
-      {
-        value: 'e3p',
-        labelElement: 'Creality Ender-2 Pro'
-      },
-      {
-        value: 'e2p',
-        labelElement: 'Creality Ender-2 Pro'
-      },
-    ],
-  };
-
 
   // materials
-  divElement = document.createElement('div');
-  divElement.className = 'config-input';
+  await fetch(`${window.location.pathname}/get-materials/`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to retrieve materials.');
+      }
 
-  labelElement = document.createElement('label');
-  labelElement.htmlFor = 'material';
-  labelElement.innerHTML = 'Material:';
-  divElement.appendChild(labelElement);
-  divElement.appendChild(document.createElement('br'));
+      return response.json();
+    })
+    .then((data) => {
+      if (data.materials.length === 0) {
+        throw new Error('No materials were retrieved.');
+      }
 
-  selectElement = document.createElement('select');
-  selectElement.id = 'material';
-  selectElement.name = 'material';
-
-  optionElement = document.createElement('option');
-  optionElement.hidden = true;
-  optionElement.disabled = true;
-  optionElement.selected = true;
-  optionElement.value = '';
-  optionElement.innerText = ' -- select an option -- ';
-  selectElement.appendChild(optionElement);
-
-  for (const { value, labelElement } of data.material) {
-    optionElement = document.createElement('option');
-    optionElement.value = value;
-    optionElement.innerText = labelElement;
-    selectElement.appendChild(optionElement);
-  }
-  divElement.appendChild(selectElement);
-  
-  configForm.append(divElement);
+      selectElement = document.getElementById('material') as HTMLSelectElement;
+      for (const material of data.materials) {
+        optionElement = document.createElement('option');
+        optionElement.value = material;
+        optionElement.innerText = material;
+        selectElement.appendChild(optionElement);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+    });
 
 
   // colours
-  divElement = document.createElement('div');
-  divElement.className = 'config-input';
+  // TODO: check if materials is selected or not
 
-  labelElement = document.createElement('label');
-  labelElement.htmlFor = 'colour';
-  labelElement.innerHTML = 'Colour:';
-  divElement.appendChild(labelElement);
-  divElement.appendChild(document.createElement('br'));
+  
+}
 
-  selectElement = document.createElement('select');
-  selectElement.id = 'colour';
-  selectElement.name = 'colour';
 
-  optionElement = document.createElement('option');
-  optionElement.hidden = true;
-  optionElement.disabled = true;
-  optionElement.selected = true;
-  optionElement.value = '';
-  optionElement.innerText = ' -- select an option -- ';
-  selectElement.appendChild(optionElement);
-
-  for (const { colourName, colourHex } of data.colour) {
-    optionElement = document.createElement('option');
-    optionElement.value = colourName;
-    optionElement.innerText = colourName;
-    selectElement.appendChild(optionElement);
+async function loadColours() {
+  if ((document.getElementById('material') as HTMLSelectElement).value === '') {
+    return;
   }
-  divElement.appendChild(selectElement);
 
-  configForm.append(divElement);
+  let selectElement = document.getElementById('colour') as HTMLSelectElement;
+  let optionElement: HTMLOptionElement;
 
+  // Clear any existing colours
+  selectElement.childNodes.forEach((child: HTMLOptionElement) => {
+    if (child.value !== '') {
+      child.remove();
+    }
+  });
 
+  await fetch(`${window.location.pathname}/get-colours/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      material: (document.getElementsByName('material')[0] as HTMLSelectElement).value,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to retrieve colours.');
+      }
 
-  // // printers
-  // divElement = document.createElement('div');
-  // divElement.className = 'config-input';
-  // // populate...
-  // configForm.append(divElement);
-
-
-  // infill
-  divElement = document.createElement('div');
-  divElement.className = 'config-input';
-
-  labelElement = document.createElement('label');
-  labelElement.htmlFor = 'infill';
-  labelElement.innerHTML = 'Infill (%):';
-  divElement.appendChild(labelElement);
-  divElement.appendChild(document.createElement('br'));
-
-  inputElement = document.createElement('input');
-  inputElement.id = 'infill';
-  inputElement.name = 'infill';
-  inputElement.type = 'number';
-  inputElement.min = '10';
-  inputElement.max = '100';
-  inputElement.step = '1';
-  inputElement.value = '15';
-  divElement.appendChild(inputElement);
-
-  configForm.append(divElement);
-
-
-  // add to cart
-  divElement = document.createElement('div');
-  divElement.id = 'add-to-cart';
-
-  // populate...
-  labelElement = document.createElement('label');
-  labelElement.htmlFor = 'quantity';
-  labelElement.innerHTML = 'Quantity to order:'
-  labelElement.hidden = true;
-  divElement.appendChild(labelElement);
-
-  inputElement = document.createElement('input');
-  inputElement.id = 'quantity';
-  inputElement.name = 'quantity';
-  inputElement.type = 'number';
-  inputElement.min = '0';
-  inputElement.max = '1000';
-  inputElement.step = '1';
-  inputElement.value = '1';
-  divElement.appendChild(inputElement);
-
-  inputElement = document.createElement('input');
-  inputElement.id = 'config-submit';
-  inputElement.type = 'button';
-  inputElement.value = 'Submit';
-  divElement.appendChild(inputElement);
-
-  configForm.append(divElement);
+      return response.json();
+    })
+    .then((data) => {
+      if (data.colours.length === 0) {
+        throw new Error('No colours were retrieved.')
+      }
+      for (const { colourName, colourHex } of data.colours) {
+        optionElement = document.createElement('option');
+        optionElement.value = colourName;
+        optionElement.innerText = colourName;
+        selectElement.appendChild(optionElement);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+    });
 }

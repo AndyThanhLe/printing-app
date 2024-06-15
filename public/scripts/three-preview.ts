@@ -142,8 +142,8 @@ export async function loadSTL(fileName: string) {
       });
 
     })
-    .catch((error) => {
-      console.error(error);
+    .catch((e) => {
+      console.error(e);
     });
     
 }
