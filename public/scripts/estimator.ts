@@ -132,7 +132,7 @@ async function upload() {
 }
 
 
-function updateActiveSTL(fileName) {
+function updateActiveSTL(fileName: string) {
   // save the current configuration
   let prev = getActive();
   if (prev) {
@@ -257,4 +257,37 @@ function createSTLButton(fileName: string, modelName: string) {
 
 function removeExtension(fileName: string) {
   return fileName.replace(/\.stl$/, '');
+}
+
+function loadConfigurationOptions() {
+  let configForm = document.getElementById('config-form') as HTMLFormElement;
+  let configInput: HTMLDivElement;
+
+  // materials
+  configInput = document.createElement('div');
+  // populate...
+  configForm.append(configInput);
+
+  // colours
+  configInput = document.createElement('div');
+  // populate...
+  configForm.append(configInput);
+
+
+  // printers
+  configInput = document.createElement('div');
+  // populate...
+  configForm.append(configInput);
+
+
+  // infill
+  configInput = document.createElement('div');
+  // populate...
+  configForm.append(configInput);
+
+
+  // add to cart
+  configInput = document.createElement('div');
+  // populate...
+  configForm.append(configInput);
 }
