@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const estimatorRouter = require('./routes/estimator');
-const checkoutRouter = require('./routes/checkout');
+const cartRouter = require('./routes/cart');
 const usersRouter = require('./routes/users');
 
 const app = express();
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/estimator', estimatorRouter);
-app.use('/checkout', checkoutRouter);
+app.use('/cart', cartRouter);
 app.use('/users', usersRouter);
 
 app.use('/modules', express.static(path.join(__dirname, 'node_modules')));

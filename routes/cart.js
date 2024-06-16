@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET checkout page. */
+/* GET cart page. */
 router.get('/', function(req, res, next) {
   console.log(`The session id is: ${req.session.userId}`);
-  res.render('checkout', { title: 'Checkout' });
+  res.render('cart', { title: 'cart' });
 });
 
 module.exports = router;
