@@ -4,16 +4,21 @@ import { loadSTL, removeSTL, getActive } from './three-preview.js';
  * Interfaces
  */
 interface Configurations {
-  [fileName: string]: Configuration;
+  [fileName: string]: {
+    name: string;
+    material: string;
+    colour: string;
+    printer: string;
+    infill: number;
+    quantity: number;
+  }
 }
 
-interface Configuration {
-  name: string;
-  material: string;
-  colour: string;
-  printer: string;
-  infill: number;
-  quantity: number;
+interface MaterialMappings {
+  [material: string]: {
+    (colourName: string) : Promise<string>,
+    (colourHex: string) : Promise<string>,
+  }
 }
 
 
@@ -21,6 +26,8 @@ interface Configuration {
  * Constants and variables
  */
 let modelConfigs: Configurations;
+let mappings: MaterialMappings;
+
 let cart: Configurations;
 
 let stls: HTMLDivElement;
@@ -33,10 +40,9 @@ let del: HTMLInputElement;
  * Event Listeners
  */
 // Initial loading of document
-window.onload = () => {
+window.onload = async () => {
   if (sessionStorage.getItem('modelConfigs')) {
     modelConfigs = JSON.parse(sessionStorage.getItem('modelConfigs'));
-
     for (const key in modelConfigs) {
       createSTLButton(key, modelConfigs[key].name);
     }
@@ -52,8 +58,17 @@ window.onload = () => {
     cart = {};
   }
 
+  mappings = await retrieveOptions();
   loadMaterials();
 };
+
+window.onbeforeunload = () => {
+  let active = getActive();
+  if (active) {
+    saveConfiguration(active);
+  }
+};
+
 
 // Deal with file import
 document.getElementById('stl-import')?.addEventListener('click', () => {
@@ -67,6 +82,12 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
 
   if (!fileName) {
     // TODO: prompt indicating empty submission
+    return;
+  }
+
+  // ensure fields are selected
+  if ((document.getElementById('material') as HTMLSelectElement).value === '' || (document.getElementById('colour') as HTMLSelectElement).value === '') {
+    // TODO: 
     return;
   }
 
@@ -182,7 +203,7 @@ function saveConfiguration(fileName: string) {
 
 function loadConfiguration(fileName: string) {
   const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
-  
+
   (document.getElementById('material') as HTMLInputElement).value = material;
   (document.getElementById('colour') as HTMLInputElement).value = colour;
 
@@ -264,88 +285,56 @@ function removeExtension(fileName: string) {
   return fileName.replace(/\.stl$/, '');
 }
 
-
-async function loadMaterials() {
-  let selectElement: HTMLSelectElement;
-  let optionElement: HTMLOptionElement;
-
-  // materials
-  await fetch(`${window.location.pathname}/get-materials/`)
+async function retrieveOptions(): Promise<MaterialMappings> {
+  let mapping: MaterialMappings = {};
+  
+  return await fetch(`${window.location.pathname}/get-config-options`)
     .then((response) => {
       if (!response.ok) {
-        throw new Error('Failed to retrieve materials.');
+        throw new Error('Issue retrieving material from server.');
       }
 
       return response.json();
     })
     .then((data) => {
-      if (data.materials.length === 0) {
-        throw new Error('No materials were retrieved.');
+      for (let key in data) {
+        mapping[key] = data[key];
       }
 
-      selectElement = document.getElementById('material') as HTMLSelectElement;
-      for (const material of data.materials) {
-        optionElement = document.createElement('option');
-        optionElement.value = material;
-        optionElement.innerText = material;
-        selectElement.appendChild(optionElement);
-      }
+      return mapping;
     })
     .catch((e) => {
       console.error(e);
+      return {};
     });
-
-
-  // colours
-  // TODO: check if materials is selected or not
-
-  
 }
 
 
-async function loadColours() {
-  if ((document.getElementById('material') as HTMLSelectElement).value === '') {
-    return;
+function loadMaterials() {
+  const materialElement = document.getElementById('material');
+
+  for (let key in mappings) {
+    let optionElement = document.createElement('option');
+    optionElement.value = key;
+    optionElement.innerHTML = key;
+    materialElement.appendChild(optionElement);
   }
+}
 
-  let selectElement = document.getElementById('colour') as HTMLSelectElement;
-  let optionElement: HTMLOptionElement;
+function loadColours() {
+  const colourElement = document.getElementById('colour');
+  const material = (document.getElementById('material') as HTMLSelectElement).value;
 
-  // Clear any existing colours
-  selectElement.childNodes.forEach((child: HTMLOptionElement) => {
-    if (child.value !== '') {
+  Array.from(colourElement.childNodes).forEach((child) => {
+    if (child instanceof HTMLOptionElement && child.value !== '') {
       child.remove();
     }
   });
 
-  await fetch(`${window.location.pathname}/get-colours/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      material: (document.getElementsByName('material')[0] as HTMLSelectElement).value,
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to retrieve colours.');
-      }
-
-      return response.json();
-    })
-    .then((data) => {
-      if (data.colours.length === 0) {
-        throw new Error('No colours were retrieved.')
-      }
-      for (const { colourName, colourHex } of data.colours) {
-        optionElement = document.createElement('option');
-        optionElement.value = colourName;
-        optionElement.innerText = colourName;
-        selectElement.appendChild(optionElement);
-      }
-    })
-    .catch((e) => {
-      console.error(e);
-    });
+  for (let index in mappings[material]) {
+    let optionElement = document.createElement('option');
+    optionElement.value = mappings[material][index].colourName;
+    optionElement.innerHTML = mappings[material][index].colourName;
+    colourElement.appendChild(optionElement);
+  }
 }

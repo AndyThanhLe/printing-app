@@ -177,4 +177,52 @@ router.post('/get-colours', async (req, res, next) => {
 });
 
 
+router.get('/get-config-options', async (req, res, next) => {
+  const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+  let optionMapping = {};
+  
+  try {
+    await client.connect();
+
+    const db = client.db(process.env.MONGODB_DATABASE_NAME);
+
+    const cursor = db.collection('filaments').aggregate([
+      {
+        $sort: {
+          colourName: 1,
+        }
+      },
+      {
+        $group: {
+          _id: '$material',
+          colours: {
+            $push: { colourName: '$colourName', colourHex: '$colourHex', }
+          },
+        }
+      },
+      {
+        $sort: {
+          _id: 1,
+        }
+      }
+    ]);
+
+    for await (const document of cursor) {
+      optionMapping[document._id] = document.colours;
+    }
+
+    console.log(optionMapping);
+  }
+  catch (e) {
+    optionMapping = {};
+    console.error(e);
+  }
+  finally {
+    client.close();
+  }
+
+  res.json(optionMapping);
+});
+
+
 module.exports = router;
