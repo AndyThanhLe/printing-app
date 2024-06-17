@@ -75,7 +75,6 @@ router.post('/submit', (req, res, next) => {
   // Add to session data...
   console.log(req.body.material);
   console.log(req.body.colour);
-  console.log(req.body.printer);
   console.log(req.body.infill);
   console.log(req.body.quantity);
 

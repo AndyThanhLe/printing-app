@@ -8,7 +8,6 @@ interface Configurations {
     name: string;
     material: string;
     colour: string;
-    printer: string;
     infill: number;
     quantity: number;
   }
@@ -142,7 +141,6 @@ async function upload() {
       'name': data.modelName,
       'material': '',
       'colour': '',
-      'printer': undefined,
       'infill': 15,
       'quantity': 1,
     };
@@ -184,7 +182,6 @@ function updateActiveSTL(fileName: string) {
 function saveConfiguration(fileName: string) {
   const materialInput = document.getElementById('material') as HTMLInputElement;
   const colourInput = document.getElementById('colour') as HTMLInputElement;
-  const printerInput = document.querySelector('input[name="printer"]:checked') as HTMLInputElement;
   const infillInput = document.getElementById('infill') as HTMLInputElement;
   const quantityInput = document.getElementById('quantity') as HTMLInputElement;
 
@@ -192,7 +189,6 @@ function saveConfiguration(fileName: string) {
     ...modelConfigs[fileName],
     'material': materialInput ? materialInput.value : '',
     'colour': colourInput ? colourInput.value : '',
-    'printer': printerInput ? printerInput.value : '',
     'infill': infillInput ? +infillInput.value : 15,
     'quantity': quantityInput ? +quantityInput.value : 1,
   };
@@ -202,20 +198,10 @@ function saveConfiguration(fileName: string) {
 
 
 function loadConfiguration(fileName: string) {
-  const { material, colour, printer, infill, quantity } = modelConfigs[fileName];
+  const { material, colour, infill, quantity } = modelConfigs[fileName];
 
   (document.getElementById('material') as HTMLInputElement).value = material;
   (document.getElementById('colour') as HTMLInputElement).value = colour;
-
-  const printerOptions = document.getElementsByName('printer');
-  printerOptions.forEach((option: HTMLInputElement) => {
-    if (option.value == printer) {
-      option.checked = true;
-    }
-    else {
-      option.checked = false;
-    }
-  });
 
   (document.getElementById('infill') as HTMLInputElement).value = infill.toString();
   (document.getElementById('quantity') as HTMLInputElement).value = quantity.toString();
