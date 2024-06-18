@@ -2,16 +2,18 @@
 <html>
   <head>
     <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="/stylesheets/estimator.css" />
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body class="vert-features">
     <div class="header">
-      <div style="flex: 1;">
+      <div class="header-text">
         <h3><%= title %></h3>
         <p>Welcome to <%= title %></p>
       </div>
-      <div id="cart" style="flex: 1;">
+      <div class="header-cart">
+        <p id="cart-count">0</p>
         <a href="/cart">Go to cart</a>
       </div>
     </div>
@@ -32,15 +34,7 @@
 
             <div id="stls">
               <!-- <div class="stl">
-                <input id="stl-1" type="button" value="STL 1" />
-              </div>
-    
-              <div class="stl">
-                <input id="stl-2" type="button" value="STL 2" />
-              </div>
-    
-              <div class="stl">
-                <input id="stl-3" type="button" value="STL 3" />
+                <input id="stl-#" type="button" value="STL #" />
               </div> -->
             </div>
 

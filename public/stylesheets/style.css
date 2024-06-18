@@ -1,8 +1,88 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+:root {
+  --lg-padding: 15px;
+  --md-padding: 10px;
+  --sm-padding: 5px;
+  --lg-margin: 15px;
+  --md-margin: 10px;
+  --sm-margin: 5px;
+  --lg-border-radius: 15px;
+  --sm-border-radius: 5px;
 }
 
 a {
   color: #00B7FF;
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.vert-features {
+  width: calc(100vw - 2*var(--lg-padding));
+  height: calc(100vh - 2*var(--lg-padding));
+  padding: var(--lg-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-padding)
+}
+
+.header {
+  display: flex;
+  flex: 0 1 auto;
+}
+
+.header-text {
+  flex: 1;
+  align-self: center;
+}
+
+.header-cart {
+  flex: 0 1 auto;
+  flex-direction: row;
+  align-self: center;
+  justify-self: end;
+}
+
+.main {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  gap: var(--md-padding)
+}
+
+.main-panel {
+  background-color: #e1e1e1;
+  border-radius: var(--lg-border-radius);
+  border: 2px solid #999999;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0px 25px 25px 25px;
+}
+
+.panel-header {
+  flex: 0 1 auto;
+}
+
+.panel-header > h3 {
+  /* font-size: 2vh; */
+  text-align: center;
+  text-wrap: nowrap;
+  overflow: hidden;
+}
+
+.panel-content {
+  background-color: #ffffff;
+  border-radius: var(--lg-border-radius);
+  flex: 1;
+  padding: var(--lg-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-padding);
+  overflow: hidden;
 }
