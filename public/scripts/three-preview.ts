@@ -95,7 +95,7 @@ function onWindowResize() {
 }
 
 
-export async function loadSTL(fileName: string, colourHex: number = 0xff9c7c) {
+export async function loadSTL(fileName: string, colourHex: number) {
   if (active == fileName) {
     return;
   }
@@ -116,7 +116,8 @@ export async function loadSTL(fileName: string, colourHex: number = 0xff9c7c) {
     }))
     .then((data) => {
       loader.load(data.filePath, (geometry) => {
-        material = new THREE.MeshPhongMaterial( { color: colourHex, specular: 0x494949, shininess: 200 } );
+        let colour = colourHex ?? 0xff9c7c;
+        material = new THREE.MeshPhongMaterial( { color: colour, specular: 0x494949, shininess: 200 } );
         mesh = new THREE.Mesh( geometry, material );
 
         // TODO: Scale and rotate accordingly
@@ -135,7 +136,6 @@ export async function loadSTL(fileName: string, colourHex: number = 0xff9c7c) {
         stls[fileName] = mesh;
 
         scene.add(mesh);
-        console.log(`The file name is ${fileName}`);
         active = fileName;
       });
 
@@ -143,8 +143,6 @@ export async function loadSTL(fileName: string, colourHex: number = 0xff9c7c) {
     .catch((e) => {
       console.error(e);
     });
-
-    console.log(`Active: ${active}`);
 }
 
 

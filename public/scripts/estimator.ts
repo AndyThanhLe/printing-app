@@ -200,11 +200,7 @@ async function updateActiveSTL(fileName: string) {
   });
 
   loadConfiguration(fileName);
-  await loadSTL(fileName);
-
-  setTimeout(() => {
-    changeColour(getHexColour());
-  }, 2000);
+  await loadSTL(fileName, getHexColour());
 }
 
 
