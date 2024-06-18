@@ -95,7 +95,7 @@ function onWindowResize() {
 }
 
 
-export async function loadSTL(fileName: string) {
+export async function loadSTL(fileName: string, colourHex: number = 0xff9c7c) {
   if (active == fileName) {
     return;
   }
@@ -104,7 +104,6 @@ export async function loadSTL(fileName: string) {
     scene.remove(stls[active]);
     active = null;
   }
-
 
   // retrieve the path to the file from the server, verifying that it is there
   await fetch(`${window.location.pathname}/get-model/${fileName}`)
@@ -116,10 +115,8 @@ export async function loadSTL(fileName: string) {
       return response.json();
     }))
     .then((data) => {
-      console.log(data.filePath);
-
       loader.load(data.filePath, (geometry) => {
-        material = new THREE.MeshPhongMaterial( { color: 0xff9c7c, specular: 0x494949, shininess: 200 } );
+        material = new THREE.MeshPhongMaterial( { color: colourHex, specular: 0x494949, shininess: 200 } );
         mesh = new THREE.Mesh( geometry, material );
 
         // TODO: Scale and rotate accordingly
@@ -138,6 +135,7 @@ export async function loadSTL(fileName: string) {
         stls[fileName] = mesh;
 
         scene.add(mesh);
+        console.log(`The file name is ${fileName}`);
         active = fileName;
       });
 
@@ -145,16 +143,31 @@ export async function loadSTL(fileName: string) {
     .catch((e) => {
       console.error(e);
     });
-    
+
+    console.log(`Active: ${active}`);
 }
 
 
-export function removeSTL(fileName) {
+export function removeSTL(fileName: string) {
   if (active == fileName) {
     active = null;
     scene.remove(stls[fileName]);
   }
   delete stls.fileName;
+}
+
+
+export function changeColour(colourHex: number) {
+  console.log(colourHex);
+  console.log(active);
+
+  if (!colourHex) {
+    return;
+  }
+  
+  if (active) {
+    (stls[active].material as THREE.MeshPhongMaterial).color.set(colourHex);
+  }
 }
 
 
