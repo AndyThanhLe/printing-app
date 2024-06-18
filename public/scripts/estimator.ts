@@ -1,4 +1,4 @@
-import { loadSTL, removeSTL, getActive } from './three-preview.js';
+import { loadSTL, removeSTL, getActive, changeColour } from './three-preview.js';
 
 /**
  * Interfaces
@@ -25,9 +25,9 @@ interface MaterialMappings {
  * Constants and variables
  */
 let modelConfigs: Configurations;
-let mappings: MaterialMappings;
-
 let cart: Configurations;
+
+let mappings: MaterialMappings;
 
 let stls: HTMLDivElement;
 let stl: HTMLDivElement;
@@ -36,7 +36,7 @@ let del: HTMLInputElement;
 
 
 /**
- * Event Listeners
+ * Event handlers
  */
 // Initial loading of document
 window.onload = async () => {
@@ -68,7 +68,6 @@ window.onbeforeunload = () => {
   }
 };
 
-
 // Deal with file import
 document.getElementById('stl-import')?.addEventListener('click', () => {
   document.getElementById('file-submission').click();
@@ -98,7 +97,33 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
 });
 
 // Deal with material change
-document.getElementById('material')?.addEventListener('change', loadColours);
+document.getElementById('material')?.addEventListener('change', () => {
+  loadColours();
+  changeColour(getHexColour());
+});
+
+// Deal with colour change
+document.getElementById('colour')?.addEventListener('change', () => {
+  changeColour(getHexColour());
+});
+
+
+
+function getHexColour(): number {
+  let material = (document.getElementById('material') as HTMLSelectElement).value;
+  let colour = (document.getElementById('colour') as HTMLSelectElement).value;
+
+  if (!material || !colour) {
+    return null;
+  }
+
+  let colours = mappings[material];
+  for (let i = 0; i < colours.length; i++) {
+    if (colours[i].colourName === colour) {
+      return parseInt(colours[i].colourHex, 16);
+    }
+  }
+}
 
 
 function updateCart() {
@@ -156,7 +181,7 @@ async function upload() {
 }
 
 
-function updateActiveSTL(fileName: string) {
+async function updateActiveSTL(fileName: string) {
   // save the current configuration
   let prev = getActive();
   if (prev) {
@@ -174,14 +199,18 @@ function updateActiveSTL(fileName: string) {
     child.classList.add('import-selected');
   });
 
-  loadSTL(fileName);
   loadConfiguration(fileName);
+  await loadSTL(fileName);
+
+  setTimeout(() => {
+    changeColour(getHexColour());
+  }, 2000);
 }
 
 
 function saveConfiguration(fileName: string) {
-  const materialInput = document.getElementById('material') as HTMLInputElement;
-  const colourInput = document.getElementById('colour') as HTMLInputElement;
+  const materialInput = document.getElementById('material') as HTMLSelectElement;
+  const colourInput = document.getElementById('colour') as HTMLSelectElement;
   const infillInput = document.getElementById('infill') as HTMLInputElement;
   const quantityInput = document.getElementById('quantity') as HTMLInputElement;
 
@@ -200,8 +229,11 @@ function saveConfiguration(fileName: string) {
 function loadConfiguration(fileName: string) {
   const { material, colour, infill, quantity } = modelConfigs[fileName];
 
-  (document.getElementById('material') as HTMLInputElement).value = material;
-  (document.getElementById('colour') as HTMLInputElement).value = colour;
+  loadMaterials();
+  (document.getElementById('material') as HTMLSelectElement).value = material;
+
+  loadColours();
+  (document.getElementById('colour') as HTMLSelectElement).value = colour;
 
   (document.getElementById('infill') as HTMLInputElement).value = infill.toString();
   (document.getElementById('quantity') as HTMLInputElement).value = quantity.toString();
@@ -271,6 +303,7 @@ function removeExtension(fileName: string) {
   return fileName.replace(/\.stl$/, '');
 }
 
+
 async function retrieveOptions(): Promise<MaterialMappings> {
   let mapping: MaterialMappings = {};
   
@@ -299,6 +332,12 @@ async function retrieveOptions(): Promise<MaterialMappings> {
 function loadMaterials() {
   const materialElement = document.getElementById('material');
 
+  Array.from(materialElement.childNodes).forEach((child) => {
+    if (child instanceof HTMLOptionElement && child.value !== '') {
+      child.remove();
+    }
+  });
+
   for (let key in mappings) {
     let optionElement = document.createElement('option');
     optionElement.value = key;
@@ -306,6 +345,7 @@ function loadMaterials() {
     materialElement.appendChild(optionElement);
   }
 }
+
 
 function loadColours() {
   const colourElement = document.getElementById('colour');
