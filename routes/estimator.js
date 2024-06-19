@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs/promises');
 const { MongoClient } = require('mongodb');
 
 
@@ -33,14 +33,23 @@ const upload = multer({
 
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  // directory the user's uploaded files will be stored at
-  let dir = path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
+router.get('/', async (req, res, next) => {
+  try {
+    // directory the user's uploaded files will be stored at
+    let dir = path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId);
+    
+    try {
+      await fs.stat(dir);
+    }
+    catch (_) {
+      await fs.mkdir(dir);
+    }
 
-  res.render('estimator', { title: 'Estimator' });
+    res.render('estimator', { title: 'Estimator' });
+  }
+  catch (e) {
+    next(e);
+  }
 });
 
 router.get('/get-session-id', (req, res, next) => {
@@ -60,17 +69,22 @@ router.put('/upload', upload.single('stl-file'), (req, res, next) => {
 
 
 /* DELETE file removal */
-router.delete('/remove', (req, res, next) => {
-  fs.unlink(path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId, req.body.id), (error) => {
-    if (error) {
-      throw error;
-    }
-    console.log(`'${req.body.id}' has been deleted!`);
-  });
-
-  res.json({
-    success: true,
-  })
+router.delete('/remove', async (req, res, next) => {
+  try {
+    await fs.unlink(path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId, req.body.id), (error) => {
+      if (error) {
+        throw error;
+      }
+      console.log(`'${req.body.id}' has been deleted!`);
+    });
+  
+    res.json({
+      success: true,
+    })
+  }
+  catch (e) {
+    next(e);
+  }
 });
 
 
