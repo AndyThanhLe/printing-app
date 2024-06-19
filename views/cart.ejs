@@ -3,12 +3,52 @@
   <head>
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="/stylesheets/cart.css" />
     <link rel="icon" href="/favicon.ico" />
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
 
-    <script type="module" src="/scripts/cart.js"></script>
+
+
+
+
+
+
+
+
+  <body class="vert-features">
+    <div class="header">
+      <div class="header-text">
+        <h3><%= title %></h3>
+        <p>Welcome to <%= title %></p>
+      </div>
+      <div class="header-cart">
+        <a href="/cart">Go to cart</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- Show items -->
+      <div class="main-panel" id="items">
+        <!-- <div class="checkout-item"></div> -->
+      </div>
+      <!-- Make this the summary panel -->
+      <div class="main-panel">
+        <!-- Order summary, <breakdown>, Continue to checkout -->
+      </div>
+    </div>
+
+
+
+
+    
+
+
+
+
+
+
+
+
+    <script type="module" src="/scripts/built/cart.js"></script>
   </body>
 </html>

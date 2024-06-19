@@ -51,7 +51,7 @@ body {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  gap: var(--md-padding)
+  gap: var(--md-padding);
 }
 
 .main-panel {
@@ -62,7 +62,8 @@ body {
   flex: 1;
   flex-direction: column;
   overflow: hidden;
-  padding: 0px 25px 25px 25px;
+  padding: var(--lg-padding);
+  gap: var(--lg-padding);
 }
 
 .panel-header {
@@ -83,6 +84,5 @@ body {
   padding: var(--lg-padding);
   display: flex;
   flex-direction: column;
-  gap: var(--md-padding);
   overflow: hidden;
 }
