@@ -73,13 +73,8 @@ window.onload = async () => {
   mappings = await retrieveOptions();
 
   loadMaterials();
-
-  (document.getElementById('material') as HTMLSelectElement).value = '';
-  (document.getElementById('colour') as HTMLSelectElement).value = '';
-  (document.getElementById('infill') as HTMLInputElement).value = '15';
-  (document.getElementById('quantity') as HTMLInputElement).value = '1';
-
-  updateCart();
+  
+  updateUI(null);
 };
 
 window.onbeforeunload = () => {
@@ -129,6 +124,25 @@ document.getElementById('material')?.addEventListener('change', () => {
 document.getElementById('colour')?.addEventListener('change', () => {
   changeColour(getHexColour());
 });
+
+
+
+function updateUI(fileName: string = null) {
+  if (fileName) {
+    loadConfiguration(fileName);
+  }
+  else {
+    (document.getElementById('material') as HTMLSelectElement).value = '';
+    (document.getElementById('colour') as HTMLSelectElement).value = '';
+    (document.getElementById('infill') as HTMLInputElement).value = '15';
+    (document.getElementById('quantity') as HTMLInputElement).value = '1';
+  }
+
+  updateCart();
+}
+
+
+
 
 
 async function getSessionId(): Promise<string> {
@@ -239,7 +253,8 @@ async function updateActiveSTL(fileName: string) {
     child.classList.add('import-selected');
   });
 
-  loadConfiguration(fileName);
+  updateUI(fileName);
+
   await loadSTL(fileName, getHexColour());
 }
 
@@ -281,6 +296,8 @@ function removeConfiguration(fileName: string) {
   delete cart[fileName];
   sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
   sessionStorage.setItem('cart', JSON.stringify(cart));
+
+  updateUI();
 }
 
 
