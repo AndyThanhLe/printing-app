@@ -34,8 +34,6 @@ const upload = multer({
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  console.log(`The session id is: ${req.session.userId}`);
-
   // directory the user's uploaded files will be stored at
   let dir = path.join(process.env.MODEL_UPLOAD_DIRECTORY, req.session.userId);
   if (!fs.existsSync(dir)) {
@@ -43,6 +41,12 @@ router.get('/', (req, res, next) => {
   }
 
   res.render('estimator', { title: 'Estimator' });
+});
+
+router.get('/get-session-id', (req, res, next) => {
+  res.json({
+    sessionId: req.session.userId,
+  });
 });
 
 

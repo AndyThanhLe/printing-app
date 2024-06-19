@@ -40,6 +40,19 @@ let del: HTMLInputElement;
  */
 // Initial loading of document
 window.onload = async () => {
+  let sessionId = await getSessionId();
+
+  // check is the session matches
+  if (sessionStorage.getItem('sessionId')) {
+    if (sessionStorage.getItem('sessionId') !== sessionId) {
+      console.error(new Error('The session id does not match.'));
+    }
+  }
+  else {
+    sessionStorage.setItem('sessionId', sessionId);
+  }
+
+
   if (sessionStorage.getItem('modelConfigs')) {
     modelConfigs = JSON.parse(sessionStorage.getItem('modelConfigs'));
     for (const key in modelConfigs) {
@@ -58,7 +71,15 @@ window.onload = async () => {
   }
 
   mappings = await retrieveOptions();
+
   loadMaterials();
+
+  (document.getElementById('material') as HTMLSelectElement).value = '';
+  (document.getElementById('colour') as HTMLSelectElement).value = '';
+  (document.getElementById('infill') as HTMLInputElement).value = '15';
+  (document.getElementById('quantity') as HTMLInputElement).value = '1';
+
+  updateCart();
 };
 
 window.onbeforeunload = () => {
@@ -93,6 +114,8 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
 
   cart[fileName] = { ...modelConfigs[fileName] };
 
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+
   updateCart();
 });
 
@@ -107,6 +130,23 @@ document.getElementById('colour')?.addEventListener('change', () => {
   changeColour(getHexColour());
 });
 
+
+async function getSessionId(): Promise<string> {
+  return await fetch(`${window.location.pathname}/get-session-id`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Issue retrieving the session id.');
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      return data.sessionId;
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+}
 
 
 function getHexColour(): number {
@@ -133,7 +173,7 @@ function updateCart() {
     numItems += +cart[key].quantity;
   }
 
-  console.log(numItems);
+  document.getElementById('cart-count').innerText = numItems.toString();
 }
 
 
@@ -238,7 +278,9 @@ function loadConfiguration(fileName: string) {
 
 function removeConfiguration(fileName: string) {
   delete modelConfigs[fileName];
+  delete cart[fileName];
   sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+  sessionStorage.setItem('cart', JSON.stringify(cart));
 }
 
 
