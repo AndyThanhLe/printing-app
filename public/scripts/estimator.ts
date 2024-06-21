@@ -40,29 +40,23 @@ let del: HTMLInputElement;
  */
 // Initial loading of document
 window.onload = async () => {
+  // Check is the session matches
   let sessionId = await getSessionId();
-
-  // check is the session matches
-  if (sessionStorage.getItem('sessionId')) {
-    if (sessionStorage.getItem('sessionId') !== sessionId) {
-      console.error(new Error('The session id does not match.'));
-    }
+  if (sessionStorage.getItem('sessionId') && sessionStorage.getItem('sessionId') !== sessionId) {
+    // TODO: redirect to error page
+    console.error(new Error('The session id does not match.'));
   }
   else {
     sessionStorage.setItem('sessionId', sessionId);
   }
 
-
+  // Configuration & cart setup
   if (sessionStorage.getItem('modelConfigs')) {
     modelConfigs = JSON.parse(sessionStorage.getItem('modelConfigs'));
-    for (const key in modelConfigs) {
-      createSTLButton(key, modelConfigs[key].name);
-    }
   }
   else {
     modelConfigs = {};
   }
-
   if (sessionStorage.getItem('cart')) {
     cart = JSON.parse(sessionStorage.getItem('cart'));
   }
@@ -70,10 +64,15 @@ window.onload = async () => {
     cart = {};
   }
 
-  mappings = await retrieveOptions();
+  // Load models
+  for (const key in modelConfigs) {
+    createSTLButton(key, modelConfigs[key].name);
+  }
 
+  // Populate form
+  mappings = await retrieveOptions();
   loadMaterials();
-  
+
   updateUI(null);
 };
 
@@ -107,10 +106,9 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
 
   saveConfiguration(fileName);
 
+  // add or overwrite current configuration in the cart
   cart[fileName] = { ...modelConfigs[fileName] };
-
   sessionStorage.setItem('cart', JSON.stringify(cart));
-
   updateCart();
 });
 
@@ -126,23 +124,22 @@ document.getElementById('colour')?.addEventListener('change', () => {
 });
 
 
-
 function updateUI(fileName: string = null) {
   if (fileName) {
     loadConfiguration(fileName);
   }
   else {
+    clearMaterials();
+    clearColours();
     (document.getElementById('material') as HTMLSelectElement).value = '';
     (document.getElementById('colour') as HTMLSelectElement).value = '';
     (document.getElementById('infill') as HTMLInputElement).value = '15';
     (document.getElementById('quantity') as HTMLInputElement).value = '1';
+
   }
 
   updateCart();
 }
-
-
-
 
 
 async function getSessionId(): Promise<string> {
@@ -384,7 +381,7 @@ async function retrieveOptions(): Promise<MaterialMappings> {
 }
 
 
-function loadMaterials() {
+function clearMaterials() {
   const materialElement = document.getElementById('material');
 
   Array.from(materialElement.childNodes).forEach((child) => {
@@ -392,6 +389,13 @@ function loadMaterials() {
       child.remove();
     }
   });
+}
+
+
+function loadMaterials() {
+  const materialElement = document.getElementById('material');
+
+  clearMaterials();
 
   for (let key in mappings) {
     let optionElement = document.createElement('option');
@@ -402,15 +406,22 @@ function loadMaterials() {
 }
 
 
-function loadColours() {
+function clearColours() {
   const colourElement = document.getElementById('colour');
-  const material = (document.getElementById('material') as HTMLSelectElement).value;
-
+  
   Array.from(colourElement.childNodes).forEach((child) => {
     if (child instanceof HTMLOptionElement && child.value !== '') {
       child.remove();
     }
   });
+}
+
+
+function loadColours() {
+  const colourElement = document.getElementById('colour');
+  const material = (document.getElementById('material') as HTMLSelectElement).value;
+
+  clearColours();
 
   for (let index in mappings[material]) {
     let optionElement = document.createElement('option');
