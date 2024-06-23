@@ -124,7 +124,26 @@ document.getElementById('colour')?.addEventListener('change', () => {
 });
 
 
+
+async function getSessionId(): Promise<string> {
+  return await fetch(`${window.location.pathname}/get-session-id`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Issue retrieving the session id.');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data.sessionId;
+    })
+    .catch((e) => {
+      throw e;
+    });
+}
+
+
 function updateUI(fileName: string = null) {
+  // Populate form elements
   if (fileName) {
     loadConfiguration(fileName);
   }
@@ -135,28 +154,9 @@ function updateUI(fileName: string = null) {
     (document.getElementById('colour') as HTMLSelectElement).value = '';
     (document.getElementById('infill') as HTMLInputElement).value = '15';
     (document.getElementById('quantity') as HTMLInputElement).value = '1';
-
   }
 
   updateCart();
-}
-
-
-async function getSessionId(): Promise<string> {
-  return await fetch(`${window.location.pathname}/get-session-id`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Issue retrieving the session id.');
-      }
-
-      return response.json();
-    })
-    .then((data) => {
-      return data.sessionId;
-    })
-    .catch((e) => {
-      console.error(e);
-    });
 }
 
 
@@ -164,7 +164,7 @@ function getHexColour(): number {
   let material = (document.getElementById('material') as HTMLSelectElement).value;
   let colour = (document.getElementById('colour') as HTMLSelectElement).value;
 
-  if (!material || !colour) {
+  if (!(material && colour)) {
     return null;
   }
 
@@ -174,6 +174,8 @@ function getHexColour(): number {
       return parseInt(colours[i].colourHex, 16);
     }
   }
+
+  return null;
 }
 
 
@@ -225,7 +227,7 @@ async function upload() {
     updateActiveSTL(data.fileName);
   })
   .catch((e) => {
-    console.error(e);
+    throw e;
   });
 
   fileInput.value = '';
@@ -309,15 +311,17 @@ function createSTLButton(fileName: string, modelName: string) {
   inp.id = `stl-data-${fileName}`;
   inp.type = 'button';
   inp.value = modelName;
-  inp.addEventListener('click', async () => {
-    updateActiveSTL(fileName);
-  });
-  stl.appendChild(inp);
 
   del = document.createElement('input');
   del.id = `stl-del-${fileName}`;
   del.type = 'button';
   del.value = `Delete`;
+
+  inp.addEventListener('click', async () => {
+    updateActiveSTL(fileName);
+  });
+  stl.appendChild(inp);
+
   del.addEventListener('click', async function () {
     const fileName = this.id.split('-').pop();
 
@@ -341,7 +345,7 @@ function createSTLButton(fileName: string, modelName: string) {
       document.getElementById(`stl-${fileName}`).remove();
       removeConfiguration(fileName);
     }).catch((e) => {
-      console.error(e);
+      throw e;
     });
   });
 
@@ -375,8 +379,7 @@ async function retrieveOptions(): Promise<MaterialMappings> {
       return mapping;
     })
     .catch((e) => {
-      console.error(e);
-      return {};
+      throw e;
     });
 }
 
