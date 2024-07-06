@@ -15,8 +15,8 @@ interface Configurations {
 
 interface MaterialMappings {
   [material: string]: {
-    (colourName: string) : Promise<string>,
-    (colourHex: string) : Promise<string>,
+    (colourName: string): Promise<string>,
+    (colourHex: string): Promise<string>,
   }
 }
 
@@ -90,7 +90,7 @@ document.getElementById('stl-import')?.addEventListener('click', () => {
 document.getElementById('file-submission')?.addEventListener('change', upload);
 
 // Deal with submission
-document.getElementById('config-submit')?.addEventListener('click', async function () {
+document.getElementById('config-submit')?.addEventListener('click', async function() {
   const fileName = getActive();
 
   if (!fileName) {
@@ -146,12 +146,15 @@ function updateUI(fileName: string = null) {
   // Populate form elements
   if (fileName) {
     loadConfiguration(fileName);
+    console.log((document.getElementById('colour') as HTMLSelectElement).value);
+    (document.getElementById('colour-input') as HTMLDivElement).hidden = (document.getElementById('material') as HTMLSelectElement).value == '';
   }
   else {
     clearMaterials();
     clearColours();
     (document.getElementById('material') as HTMLSelectElement).value = '';
     (document.getElementById('colour') as HTMLSelectElement).value = '';
+    (document.getElementById('colour-input') as HTMLDivElement).hidden = true;
     (document.getElementById('infill') as HTMLInputElement).value = '15';
     (document.getElementById('quantity') as HTMLInputElement).value = '1';
   }
@@ -181,7 +184,7 @@ function getHexColour(): number {
 
 function updateCart() {
   let numItems = 0;
-  
+
   for (const key in cart) {
     numItems += +cart[key].quantity;
   }
@@ -204,31 +207,31 @@ async function upload() {
     method: 'PUT',
     body: formData,
   })
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
 
-    return response.json();
-  })
-  .then((data) => {
-    createSTLButton(data.fileName, removeExtension(data.modelName));
+      return response.json();
+    })
+    .then((data) => {
+      createSTLButton(data.fileName, removeExtension(data.modelName));
 
-    // add config
-    modelConfigs[data.fileName] = {
-      'name': data.modelName,
-      'material': '',
-      'colour': '',
-      'infill': 15,
-      'quantity': 1,
-    };
-    sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
+      // add config
+      modelConfigs[data.fileName] = {
+        'name': data.modelName,
+        'material': '',
+        'colour': '',
+        'infill': 15,
+        'quantity': 1,
+      };
+      sessionStorage.setItem('modelConfigs', JSON.stringify(modelConfigs));
 
-    updateActiveSTL(data.fileName);
-  })
-  .catch((e) => {
-    throw e;
-  });
+      updateActiveSTL(data.fileName);
+    })
+    .catch((e) => {
+      throw e;
+    });
 
   fileInput.value = '';
 }
@@ -322,7 +325,7 @@ function createSTLButton(fileName: string, modelName: string) {
   });
   stl.appendChild(inp);
 
-  del.addEventListener('click', async function () {
+  del.addEventListener('click', async function() {
     const fileName = this.id.split('-').pop();
 
     await fetch(`${window.location.pathname}/remove/`, {
@@ -341,7 +344,7 @@ function createSTLButton(fileName: string, modelName: string) {
       return response.json();
     }).then((_) => {
       removeSTL(fileName);
-      
+
       document.getElementById(`stl-${fileName}`).remove();
       removeConfiguration(fileName);
     }).catch((e) => {
@@ -362,7 +365,7 @@ function removeExtension(fileName: string) {
 
 async function retrieveOptions(): Promise<MaterialMappings> {
   let mapping: MaterialMappings = {};
-  
+
   return await fetch(`${window.location.pathname}/get-config-options`)
     .then((response) => {
       if (!response.ok) {
@@ -411,7 +414,7 @@ function loadMaterials() {
 
 function clearColours() {
   const colourElement = document.getElementById('colour');
-  
+
   Array.from(colourElement.childNodes).forEach((child) => {
     if (child instanceof HTMLOptionElement && child.value !== '') {
       child.remove();
@@ -432,4 +435,6 @@ function loadColours() {
     optionElement.innerHTML = mappings[material][index].colourName;
     colourElement.appendChild(optionElement);
   }
+
+  (document.getElementById('colour-input') as HTMLDivElement).hidden = false;
 }
