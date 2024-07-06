@@ -7,6 +7,14 @@
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body class="vert-features">
+
+    <div class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Test text</p>
+      </div>
+    </div>
+
     <div class="header">
       <div class="header-text">
         <h3><%= title %></h3>
@@ -88,7 +96,7 @@
             </div>
 
             <div id="add-to-cart">
-              <input type="number" value="1" min="0" max="1000" step="1" id="quantity" name="quantity" />
+              <input type="number" value="1" min="1" max="1000" step="1" id="quantity" name="quantity" />
               <input id="config-submit" type="button" value="Submit" />
             </div>
           </form>
