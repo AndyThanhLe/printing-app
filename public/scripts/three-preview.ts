@@ -51,36 +51,36 @@ function init() {
 
   // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0xa0a0a0 );
-  scene.fog = new THREE.Fog( 0xa0a0a0, 0, 2000 );
+  scene.background = new THREE.Color(0xa0a0a0);
+  scene.fog = new THREE.Fog(0xa0a0a0, 0, 2000);
   // scene.add(new THREE.AxesHelper(50));
 
 
   // Lights
-  const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444, 3 );
-  hemiLight.position.set( 0, 200, 0 );
-  scene.add( hemiLight );
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3);
+  hemiLight.position.set(0, 200, 0);
+  scene.add(hemiLight);
 
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 3 );
-  directionalLight.position.set( 0, 200, 10 );
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
+  directionalLight.position.set(0, 200, 10);
   directionalLight.castShadow = true;
   directionalLight.shadow.camera.top = 2;
   directionalLight.shadow.camera.bottom = - 2;
   directionalLight.shadow.camera.left = - 2;
   directionalLight.shadow.camera.right = 2;
-  scene.add( directionalLight );
+  scene.add(directionalLight);
 
 
   // Ground
-  const ground = new THREE.Mesh( new THREE.PlaneGeometry( 256, 256 ), new THREE.MeshPhongMaterial( { color: 0xbbbbbb, depthWrite: false } ) );
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(256, 256), new THREE.MeshPhongMaterial({ color: 0xbbbbbb, depthWrite: false }));
   ground.rotation.x = - Math.PI / 2;
   ground.receiveShadow = true;
-  scene.add( ground );
+  scene.add(ground);
 
-  const grid = new THREE.GridHelper( 256, 16, 0x000000, 0x000000 );
+  const grid = new THREE.GridHelper(256, 16, 0x000000, 0x000000);
   grid.material.opacity = 0.2;
   grid.material.transparent = true;
-  scene.add( grid );
+  scene.add(grid);
 
   window.addEventListener('resize', onWindowResize);
 
@@ -117,8 +117,8 @@ export async function loadSTL(fileName: string, colourHex: number) {
     .then((data) => {
       loader.load(data.filePath, (geometry) => {
         let colour = colourHex ?? 0xff9c7c;
-        material = new THREE.MeshPhongMaterial( { color: colour, specular: 0x494949, shininess: 200 } );
-        mesh = new THREE.Mesh( geometry, material );
+        material = new THREE.MeshPhongMaterial({ color: colour, specular: 0x494949, shininess: 200 });
+        mesh = new THREE.Mesh(geometry, material);
 
         // TODO: Scale and rotate accordingly
         // mesh.rotateY(- Math.PI / 2);
@@ -132,7 +132,7 @@ export async function loadSTL(fileName: string, colourHex: number) {
 
         mesh.castShadow = true;
         mesh.receiveShadow = true;
-        
+
         stls[fileName] = mesh;
 
         scene.add(mesh);
@@ -162,7 +162,7 @@ export function changeColour(colourHex: number) {
   if (!colourHex) {
     return;
   }
-  
+
   if (active) {
     (stls[active].material as THREE.MeshPhongMaterial).color.set(colourHex);
   }
