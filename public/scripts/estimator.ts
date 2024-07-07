@@ -123,6 +123,10 @@ document.getElementById('colour')?.addEventListener('change', () => {
   changeColour(getHexColour());
 });
 
+document.getElementById('modal-close')?.addEventListener('click', () => {
+  (document.getElementById('modal') as HTMLDivElement).style.display = 'none';
+});
+
 
 
 async function getSessionId(): Promise<string> {
