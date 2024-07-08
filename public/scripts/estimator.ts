@@ -110,6 +110,11 @@ document.getElementById('config-submit')?.addEventListener('click', async functi
   cart[fileName] = { ...modelConfigs[fileName] };
   sessionStorage.setItem('cart', JSON.stringify(cart));
   updateCart();
+
+  // display the modal with a success message
+  (document.getElementById('modal') as HTMLDivElement).style.display = 'block';
+  (document.getElementById('modal-text') as HTMLParagraphElement).innerText = 'Successfully added to cart!';
+
 });
 
 // Deal with material change
